@@ -8,7 +8,8 @@ hero:
     file: ../../assets/houston.webp
   actions:
     - text: Example Guide
-      link: /guides/example/
+      # hero.actions 不會自動加 base 前綴（SPEC #1 已知坑，Phase 0 實證 404）——需手寫完整路徑
+      link: /learn-claude-code/guides/example/
       icon: right-arrow
     - text: Read the Starlight docs
       link: https://starlight.astro.build
