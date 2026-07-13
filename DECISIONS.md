@@ -140,5 +140,14 @@
 - **心智模型圖落地方式（SPEC #9 具體化）**：手寫 `src/assets/diagrams/mental-model.svg` 為版控源碼，經 `src/components/MentalModel.astro` 以 `?raw` inline 進頁面（非 `<img>`）——inline 才能讓 SVG 內 `:root[data-theme]` 選擇器跟 Starlight 深淺色切換即時反色，全程零 client-side JS。實測淺/深色顏色正確翻轉、viewBox 響應式縮放。
 - **驗證環境限制**：本 session 的 Browser pane 截圖工具逾時（renderer 卡住），改用 read_page（結構）＋javascript_tool（計算樣式）驗證，等效且更精確。視覺回歸若需截圖，留待可用環境補。
 
+## 2026-07-14 Phase 2 第一波上線（骨架＋trust）與使用者回饋迭代
+- **可讀性回饋（使用者，中老年受眾）→ 全站 CSS 迭代**：回饋「字太小、太文謅謅、都在看字、有壓力」。診斷（量測 DOM）發現真兇不是字級而是**字型堆疊無 CJK 字型**，中文在 Windows fallback 到又細又難讀的新細明體。修法：`src/styles/custom.css` 明確指定系統中文黑體（PingFang TC／微軟正黑／Noto Sans TC）＋放大字級（內文 18px、左側欄 17px、右側 ToC 13→15px）＋語氣改口語短句＋加視覺（h2 強調色條、emoji 標題錨點、Steps/CardGrid、圓潤提示框、行內 code 上色）。定案模板以 getting-started 為範本，套用全骨架 8 頁。**注意**：Browser pane 預覽環境無使用者的 Windows 系統字型，中文字型渲染只能由使用者在真實瀏覽器判斷（本 session 驗證限制）。
+- **截圖策略裁決**：Claude Code 終端機截圖無法由主對話擷取，且「用網路免費圖當截圖」違反誠實教學（NN #10）＋著作權＋本站圖規則。使用者採方案 B：手繪 `terminal-startup.svg` 示意圖（明確標「示意圖，非真實截圖」，text-source、深淺色自適應），日後可由使用者補真實截圖替換。
+- **trust/ 訓練預設值——內容正確裁決**：草稿曾斷言「Free/Pro/Max 預設用於訓練、保留 5 年」（來自條款更新＋報導交叉核對，非官方逐字）。使用者裁決**收斂為不斷言預設值**：改為「政策隨方案/時間變動、官方頁未明寫預設值，最可靠是自查設定頁」＋保留自查步驟與商業方案不訓練（有官方依據）。落實「內容正確 ＞ 一切」與 CLAUDE.md #4「僅靠推測一律不寫死」。
+- **權限模式時效發現（呼應 Phase 1 Auto Mode 記錄，影響 Phase 3）**：官方 `permission-modes` 頁現含 `auto`（分類器）與 `dontAsk`（CI）等較新模式，本站 `reference/settings-permissions`（2.1.207）只列四種。trust 頁刻意只教四種給新手、細節連 reference。Phase 3 更新管線複審 settings/決策頁時應評估補新模式。
+- **checkpointing/rewind 新發現**：官方 checkpointing 頁——`/rewind`（雙 Esc）為本機暫時還原，官方明講「不能取代版本控制」、且不追蹤 Bash 造成的檔案變動。已寫入 trust/git-as-undo 做對比。
+- **連結稽核腳本驗證跨段依賴閉合**：trust/ 上線後，`node scripts/check-links.mjs`（無白名單）29 頁全通，證實骨架先前指向 trust/ 的 5 個跨段連結全部解掉。此腳本確立為每批次收尾固定關卡。
+- **部署驗證**：push→Actions success→live 站 getting-started／first-project／trust／practice-folder.zip 皆 200、內容相符（補完 Phase 1 遺留的「公開網址可開」live 驗證）。
+
 ## 翻案紀錄
 （無）
