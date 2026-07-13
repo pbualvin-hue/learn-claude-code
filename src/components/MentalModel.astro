@@ -1,0 +1,33 @@
+---
+// 心智模型全景圖（SPEC #9）：源碼為版控的 .svg，建置時 inline 進頁面。
+// inline（而非 <img>）是刻意的——SVG 內的 :root[data-theme] 選擇器才能跟著
+// Starlight 的深淺色切換即時反色；全程無 client-side JS 渲染。
+import mentalModelSvg from '../assets/diagrams/mental-model.svg?raw';
+
+interface Props {
+  /** 無障礙用途：圖說標題，會成為包裹容器的 aria-label 補充。 */
+  caption?: string;
+}
+const { caption } = Astro.props;
+---
+
+<figure class="mental-model">
+  <Fragment set:html={mentalModelSvg} />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .mental-model {
+    margin: 1.5rem 0;
+  }
+  .mental-model :global(svg) {
+    display: block;
+    margin-inline: auto;
+  }
+  .mental-model figcaption {
+    margin-top: 0.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--sl-color-gray-3);
+  }
+</style>

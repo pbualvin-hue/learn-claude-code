@@ -1,0 +1,142 @@
+---
+title: 第一次啟動 Claude Code
+description: 從安裝到成功跟 Claude Code 講到第一句話，沒寫過程式也能輕鬆走完的第一課。
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/setup
+  - https://docs.claude.com/en/docs/claude-code/quickstart
+  - https://docs.claude.com/en/docs/claude-code/security
+audience: beginner
+last_reviewed: 2026-07-13
+---
+
+import { Steps, Card, CardGrid } from '@astrojs/starlight/components';
+import TerminalStartup from '../../../components/TerminalStartup.astro';
+
+:::note[先備知識]
+不用會寫程式，也不用懂電腦。有一台能上網的電腦，就可以開始。
+
+還不知道 Claude Code 是什麼？先看 [Claude Code 是什麼？](../../reference/what-is-claude-code/)，再回來這裡。
+:::
+
+## 🎯 這一課只做一件事
+
+把 Claude Code 裝好，然後跟它講到第一句話。就這樣，不用多。
+
+慢慢來。看不懂的地方先跳過沒關係——真正重要的東西，後面用到的時候會再講一次。
+
+## 🖥️ 它長什麼樣子？
+
+先講一句可能讓你鬆一口氣的話：Claude Code **沒有**漂亮的視窗、也沒有一排按鈕。
+
+它住在一個叫「終端機」的地方——一個只能打字的小視窗（黑底或白底都有可能）。第一次看到會有點陌生，這很正常，大家都一樣。
+
+你可以這樣想：終端機就像一個聊天視窗，只是對面坐的是一個很懂電腦的幫手。你打字告訴它要做什麼，它看懂了就動手，而且動手前還會先問過你。
+
+啟動之後，畫面大概長這樣：
+
+<TerminalStartup />
+
+終端機本身不是 Claude Code，是你電腦本來就內建的東西（Windows 叫它 PowerShell，Mac 叫它 Terminal）。Claude Code 只是住進去的一個幫手，打 `claude` 就能把它叫出來。
+
+## 📦 先把它裝起來
+
+安裝要打的那一行指令，我們放在另一頁隨時更新：[安裝與登入](../../reference/install/)。
+
+為什麼不直接寫在這裡？因為官方偶爾會調整，寫死在這反而可能害你照到過期的版本。那頁會一直跟著最新的走。
+
+大概就三步：
+
+<Steps>
+
+1. 打開終端機（Windows 在開始選單搜「PowerShell」，Mac 用 Cmd＋空白鍵搜「Terminal」）。
+
+2. 到 [安裝與登入](../../reference/install/)，複製你系統對應的那一行，貼上、按 Enter。
+
+3. 裝好後打 `claude --version`，看到印出一串版本號，就成功了。
+
+</Steps>
+
+:::note[電腦太舊會不會裝不了？]
+門檻其實不高，這幾年買的電腦幾乎都可以。詳細規格列在 [安裝與登入](../../reference/install/)，真的不確定再去看就好，先別卡在這裡。
+:::
+
+{/* 之後可補真實截圖（安裝完成畫面），標注擷取版本 v2.1.207 */}
+
+## 💬 第一次叫出 Claude
+
+裝好了，找一個你想讓它幫忙的資料夾（桌面上隨便一個資料夾也行），在那裡打開終端機，輸入：
+
+```bash
+claude
+```
+
+第一次會有兩個小關卡，別緊張，都很快：
+
+- **登入**：會跳出瀏覽器，要你登入 Claude 帳號。
+  小提醒：Claude Code 需要付費方案（Pro／Max／Team 之類）才能用，免費的 claude.ai 帳號不含這個功能。帳號請自己到官網辦，密碼不要交給任何人、任何程式。
+- **問你信不信任這個資料夾**：第一次在某個資料夾裡用，它會先問過你一次。這是它故意設計的安全關卡，不是出錯，點信任就好。
+
+兩關過了，你就會看到上面那張示意圖的歡迎畫面，停在那裡等你打字。
+
+:::tip[不用每次都登入]
+登入一次就記住了，下次打 `claude` 直接就能用。哪天想換帳號，再打 `/login` 就好。
+:::
+
+## ✍️ 跟著做
+
+現在換你動手：
+
+<Steps>
+
+1. 照 [安裝與登入](../../reference/install/) 裝好，打 `claude --version` 確認有版本號。
+
+2. 找一個空資料夾，在那裡打開終端機，輸入 `claude`。
+
+3. 跳出登入就登入；問你信不信任資料夾，選信任。
+
+4. 看到畫面後，直接打字問它一句：
+
+   ```text
+   這個資料夾裡有什麼？
+   ```
+
+   **你會看到**：它讀了資料夾，用中文告訴你裡面有什麼。如果資料夾是空的，它會說「沒有東西」——這也對，代表它真的在看，不是隨便回你。
+
+</Steps>
+
+<details>
+<summary>卡住了？點開看</summary>
+
+- **打 `claude` 說找不到指令**：多半是還沒裝好，或終端機需要重開。關掉視窗、重開一個再試；還是不行就回 [安裝與登入](../../reference/install/) 對一下步驟有沒有漏。
+- **卡在登入畫面，回終端機還是沒登入**：把瀏覽器那頁關掉，重打一次 `claude`，通常會重新跳登入。
+- **畫面停住不動**：多半不是壞掉，是它在等你打字。看一下最後一行是不是在問你 yes/no。
+- 都試過還是卡，就看 [常見問題](../../reference/faq/)。
+
+</details>
+
+## 📝 這課有沒有該記進 CLAUDE.md 的？
+
+這一課還用不到，先放著就好。但可以先種一個念頭：以後每解決一個麻煩，都順口問自己一句「這個要不要記下來，下次不用再講一遍？」
+
+這就是之後 [打造你自己的 CLAUDE.md](../../learn/your-own-claude-md/) 那一課的主角，這裡先埋個伏筆。
+
+## 🧭 新手最常卡的三件事
+
+<CardGrid>
+	<Card title="找不到終端機" icon="magnifier">
+		Windows 開始選單搜「PowerShell」，Mac 用 Cmd＋空白鍵搜「Terminal」。找不到不是你的錯，是它藏得有點深。
+	</Card>
+	<Card title="不敢按「可以嗎」" icon="approve-check">
+		它每次動手前都會問你，這是在保護你，不是壞掉。看不懂在問什麼，先別急著按，可以先看 [不該分享的東西](../../trust/what-not-to-share/)。
+	</Card>
+	<Card title="以為當機了" icon="information">
+		終端機不會轉圈圈，安靜下來通常就是輪到你打字了，不是壞掉。
+	</Card>
+</CardGrid>
+
+## 👉 下一步
+
+裝好、登入、也講到第一句話了，很棒。接下來看 [怎麼跟 Claude 說話](../../learn/how-to-talk-to-claude/)，學怎麼讓它一次就聽懂你要什麼。
+
+正式開始用之前，也花五分鐘看看 [不該分享的東西](../../trust/what-not-to-share/)，用起來更安心。

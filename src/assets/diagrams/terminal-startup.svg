@@ -1,0 +1,51 @@
+<svg class="mock" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img" aria-labelledby="ts-title ts-desc" style="width:100%;height:auto;max-width:720px">
+  <title id="ts-title">Claude Code 啟動後的畫面示意</title>
+  <desc id="ts-desc">這是一張示意圖（非真實截圖）。你在終端機輸入 claude 後，會看到一個歡迎畫面，上面顯示版本號（例如 v2.1.207）、目前使用的模型、以及現在所在的工作資料夾，最後停在一個等你輸入的提示符號。</desc>
+  <style>
+    .mock { --win-bg:#f4f6fa; --win-border:#cbd5e1; --cap:#55616e; }
+    :root[data-theme='dark'] .mock { --win-bg:#161b22; --win-border:#303845; --cap:#9aa5b1; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme='light']) .mock { --win-bg:#161b22; --win-border:#303845; --cap:#9aa5b1; }
+    }
+    .mock .winbg { fill:var(--win-bg); stroke:var(--win-border); stroke-width:1.5; }
+    .mock .term { fill:#1b1e23; }
+    .mock .wbox { fill:none; stroke:#3a3f47; stroke-width:1.5; }
+    .mock .t { font-family: ui-monospace, "Cascadia Code", Consolas, Menlo, monospace; font-size:15px; fill:#d4d4d4; }
+    .mock .path { fill:#4ec9b0; }
+    .mock .accent { fill:#c586e0; }
+    .mock .green { fill:#6a9955; }
+    .mock .mutedterm { fill:#7f8896; }
+    .mock .title { font-family: inherit; font-size:12px; fill:var(--cap); }
+    .mock .cap { font-family: inherit; font-size:12.5px; fill:var(--cap); }
+  </style>
+
+  <!-- 視窗外框 -->
+  <rect class="winbg" x="16" y="16" width="688" height="360" rx="12" />
+  <!-- 紅黃綠三顆點 -->
+  <circle cx="42" cy="36" r="6" fill="#ff5f56" />
+  <circle cx="62" cy="36" r="6" fill="#ffbd2e" />
+  <circle cx="82" cy="36" r="6" fill="#27c93f" />
+  <text class="title" x="360" y="40" text-anchor="middle">終端機（Windows PowerShell／macOS Terminal）</text>
+
+  <!-- 終端機深色面板 -->
+  <rect class="term" x="28" y="56" width="664" height="306" rx="8" />
+
+  <!-- 輸入行 -->
+  <text class="t" x="46" y="92">
+    <tspan class="path">PS C:\專案\my-app&gt;</tspan><tspan> claude</tspan><tspan class="green">   # ← 你輸入這個</tspan>
+  </text>
+
+  <!-- 歡迎資訊框（示意，非逐字） -->
+  <rect class="wbox" x="46" y="108" width="520" height="132" rx="6" />
+  <text class="t accent" x="66" y="136">✻ Claude Code</text>
+  <text class="t" x="66" y="164"><tspan class="mutedterm">版本　　　</tspan>v2.1.207</text>
+  <text class="t" x="66" y="192"><tspan class="mutedterm">模型　　　</tspan>Claude（依你的方案而定）</text>
+  <text class="t" x="66" y="220"><tspan class="mutedterm">工作資料夾　</tspan>C:\專案\my-app</text>
+
+  <!-- 提示符號 -->
+  <text class="t" x="46" y="278"><tspan class="green">&gt;</tspan> <tspan fill="#d4d4d4">▌</tspan><tspan class="mutedterm">　等你打字…</tspan></text>
+  <text class="t mutedterm" x="46" y="312">（畫面安靜下來 = 它在等你輸入，不是當機）</text>
+
+  <!-- 圖說 -->
+  <text class="cap" x="360" y="400" text-anchor="middle">示意圖，非真實截圖——僅示意啟動後畫面會出現哪些資訊；實際版面依你的版本與設定略有不同。</text>
+</svg>

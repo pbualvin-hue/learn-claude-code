@@ -131,5 +131,14 @@
 - **多 agent 產文的連結 slug 風險**：5 個平行 docs-writer agent 各自猜相鄰頁 slug，出現 2 處把 settings-permissions 誤寫成 `../settings/`（死連結）。主對話以「grep 所有 `../xxx/` 目標比對 14 個實際 slug」集中稽核修正。列為已知風險：日後批次產文後，連結 slug 一律集中稽核一次，不依賴各 agent 自猜正確。
 - **slash commands 官方頁現況（供 Phase 3 決策頁複審參考）**：官方 slash-commands 頁內容已朝 skills 傾斜（custom slash command 併入 skills 機制），內建指令另見 `commands` 頁。內容頁已據此撰寫；此為 hooks/skills/agents 重疊關係會隨版本變動的實例，正是決策比較頁（Phase 2）易過時、需列入更新管線強制複審的原因。
 
+## 2026-07-13 Phase 2 執行發現（第一段：批次 0-2，過程紀錄）
+- **Auto Mode 內容時效訊號（影響 Phase 3 管線＋settings 頁）**：撰寫軌道頁時 WebFetch 官方 permissions 頁，發現官方現已文件化較新的「Auto Mode」權限概念，但本站既有 `reference/settings-permissions.mdx`（base_version 2.1.207，Phase 1 已審）只寫 default/acceptEdits/plan/bypassPermissions 四種模式。判定：第一段軌道頁為與既有已發布頁一致，暫依舊四模式描述（非捏造，是一致性選擇）；但這是「官方改行為、舊頁未跟」的實例——Phase 3 更新管線複審 settings 頁時應評估補上 Auto Mode，並非本段擋點。
+- **MDX 不支援 HTML 註解（authoring gotcha，回寫 agent brief 慣例）**：截圖 TODO 佔位符用 `<!-- -->` 會讓 MDX 解析失敗（`Unexpected character !`），須用 `{/* */}`。已修。日後給內容 agent 的 brief 一律指定 MDX 註解語法，不要用 HTML 註解。
+- **agent 產出殘留 `</content>` 閉合標籤**：3/5 個 agent 在檔尾多寫一行 `</content>`，MDX 視為未匹配 JSX 閉合標籤 → build fail。已移除。列入批次後稽核固定項：新頁一律掃 `<!--`、`</content>`、簡繁混寫（本次抓到 getting-started「门」）。
+- **連結稽核升級為腳本（取代 Phase 1 的人工 grep）**：新增 `scripts/check-links.mjs`——build 後掃 dist 所有 HTML 內部連結、相對於各頁 URL 解析、驗證目標實體存在，支援 `--allow-missing <前綴>` 白名單尚未產出的頁面。本段實測抓出唯一待補類別為 trust/（第二段產出），其餘 24 頁連結全通。此腳本為 DECISIONS「批次後集中稽核」的可執行化，後續每批次沿用。
+- **跨段死連結處理**：第一段內容頁已指向第二段的 trust/what-not-to-share、trust/verify-ai-output（軌道 B 的硬閘門依賴此頁，SPEC #8）。為避免 live 站短暫出現 5 個死連結，判定：第一段不單獨 push 上線，push 延到第二段 trust/ 產出後一次部署（兩次審核檢查點、一次 deploy）。使用者已授權本 Phase 批次完成後自行 push；此為在授權範圍內的部署時機判斷。
+- **心智模型圖落地方式（SPEC #9 具體化）**：手寫 `src/assets/diagrams/mental-model.svg` 為版控源碼，經 `src/components/MentalModel.astro` 以 `?raw` inline 進頁面（非 `<img>`）——inline 才能讓 SVG 內 `:root[data-theme]` 選擇器跟 Starlight 深淺色切換即時反色，全程零 client-side JS。實測淺/深色顏色正確翻轉、viewBox 響應式縮放。
+- **驗證環境限制**：本 session 的 Browser pane 截圖工具逾時（renderer 卡住），改用 read_page（結構）＋javascript_tool（計算樣式）驗證，等效且更精確。視覺回歸若需截圖，留待可用環境補。
+
 ## 翻案紀錄
 （無）

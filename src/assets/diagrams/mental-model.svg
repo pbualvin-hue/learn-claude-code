@@ -1,0 +1,117 @@
+<svg class="diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 660" role="img" aria-labelledby="mm-title mm-desc" style="width:100%;height:auto;max-width:760px">
+  <title id="mm-title">一次對話裡的全景圖</title>
+  <desc id="mm-desc">你送出需求後，Claude 在一次對話裡思考；它看得到的東西叫 context，包含你的訊息、開著的檔案、以及從 CLAUDE.md 載入的偏好與記憶。Claude 想動手時透過工具，但動到你真實的檔案或外部服務前，會先經過權限閘門問你。Claude 也可以把子任務委派給 subagent。</desc>
+  <style>
+    .diagram {
+      --bg: #ffffff; --box: #f4f6fa; --stroke: #cbd5e1; --text: #1f2933;
+      --muted: #55616e; --accent: #6d4bff; --accent-soft: #ece8ff; --accent-stroke:#b7a6ff;
+      --warn: #b4530f; --warn-soft: #fdeede; --warn-stroke:#eab793; --line: #8b97a6;
+    }
+    :root[data-theme='dark'] .diagram {
+      --bg: #0d1117; --box: #161b22; --stroke: #303845; --text: #e6edf3;
+      --muted: #9aa5b1; --accent: #b7a2ff; --accent-soft: #241d3d; --accent-stroke:#4b3d78;
+      --warn: #f6a35c; --warn-soft: #33240f; --warn-stroke:#6b4a1f; --line: #6b7685;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme='light']) .diagram {
+        --bg: #0d1117; --box: #161b22; --stroke: #303845; --text: #e6edf3;
+        --muted: #9aa5b1; --accent: #b7a2ff; --accent-soft: #241d3d; --accent-stroke:#4b3d78;
+        --warn: #f6a35c; --warn-soft: #33240f; --warn-stroke:#6b4a1f; --line: #6b7685;
+      }
+    }
+    .diagram text { font-family: inherit; fill: var(--text); }
+    .diagram .box { fill: var(--box); stroke: var(--stroke); stroke-width: 1.5; }
+    .diagram .session { fill: none; stroke: var(--accent-stroke); stroke-width: 2; stroke-dasharray: 6 5; }
+    .diagram .core { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+    .diagram .gate { fill: var(--warn-soft); stroke: var(--warn-stroke); stroke-width: 1.5; }
+    .diagram .h { font-size: 15px; font-weight: 700; }
+    .diagram .s { font-size: 12px; fill: var(--muted); }
+    .diagram .li { font-size: 12.5px; }
+    .diagram .lbl { font-size: 11.5px; fill: var(--muted); }
+    .diagram .cap { font-size: 12.5px; fill: var(--muted); }
+    .diagram .gatetext { fill: var(--warn); font-size: 14px; font-weight: 700; }
+    .diagram .flow { fill: none; stroke: var(--line); stroke-width: 2; }
+    .diagram .arrowhead { fill: var(--line); }
+    .diagram .tag { font-size: 12px; font-weight: 700; fill: var(--accent); }
+  </style>
+  <defs>
+    <marker id="mm-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="arrowhead" d="M0,0 L10,5 L0,10 z" />
+    </marker>
+  </defs>
+
+  <!-- 你 -->
+  <rect class="box" x="300" y="28" width="160" height="52" rx="10" />
+  <text class="h" x="380" y="52" text-anchor="middle">你</text>
+  <text class="s" x="380" y="70" text-anchor="middle">說出目標與脈絡</text>
+
+  <!-- 你 -> 對話 -->
+  <path class="flow" d="M380,80 L380,122" marker-end="url(#mm-arrow)" />
+  <text class="lbl" x="390" y="106" text-anchor="start">你的需求（prompt）</text>
+
+  <!-- 一次對話 容器 -->
+  <rect class="session" x="24" y="126" width="712" height="374" rx="16" />
+  <text class="tag" x="46" y="150">一次對話（session）</text>
+
+  <!-- Context 面板 -->
+  <rect class="box" x="48" y="168" width="216" height="304" rx="10" />
+  <text class="h" x="156" y="194" text-anchor="middle">Context 上下文</text>
+  <text class="s" x="156" y="212" text-anchor="middle">Claude 此刻看得到的東西</text>
+  <text class="li" x="66" y="246">· 你這一輪的訊息</text>
+  <text class="li" x="66" y="278">· 開著的檔案內容</text>
+  <text class="li" x="66" y="310">· CLAUDE.md 的偏好與記憶</text>
+  <text class="lbl" x="80" y="328">（存在專案裡，每次對話自動載入）</text>
+  <text class="li" x="66" y="360">· 工具回傳的結果</text>
+  <text class="lbl" x="80" y="378">（邊做邊長大，會佔空間）</text>
+
+  <!-- Context -> Claude -->
+  <path class="flow" d="M264,250 L300,250" marker-end="url(#mm-arrow)" />
+  <text class="lbl" x="282" y="242" text-anchor="middle">餵給它</text>
+
+  <!-- Claude 核心 -->
+  <rect class="core" x="300" y="210" width="176" height="86" rx="12" />
+  <text class="h" x="388" y="248" text-anchor="middle">Claude</text>
+  <text class="s" x="388" y="270" text-anchor="middle">這一輪的思考與決定</text>
+
+  <!-- Claude -> subagent -->
+  <path class="flow" d="M476,240 L520,240" marker-end="url(#mm-arrow)" />
+  <text class="tag" x="498" y="232" text-anchor="middle">委派</text>
+  <!-- subagent 回報 -->
+  <path class="flow" d="M520,266 L476,266" marker-end="url(#mm-arrow)" />
+  <text class="lbl" x="498" y="282" text-anchor="middle">回報</text>
+
+  <!-- subagent -->
+  <rect class="box" x="520" y="210" width="196" height="86" rx="10" />
+  <text class="h" x="618" y="240" text-anchor="middle">subagent 幫手</text>
+  <text class="s" x="618" y="260" text-anchor="middle">自己獨立的 context</text>
+  <text class="s" x="618" y="278" text-anchor="middle">做完把結論交回來</text>
+
+  <!-- Claude -> 工具 -->
+  <path class="flow" d="M388,296 L388,332" marker-end="url(#mm-arrow)" />
+  <text class="lbl" x="398" y="318" text-anchor="start">想動手</text>
+
+  <!-- 工具 -->
+  <rect class="box" x="300" y="334" width="176" height="54" rx="10" />
+  <text class="h" x="388" y="358" text-anchor="middle">工具 Tools</text>
+  <text class="s" x="388" y="376" text-anchor="middle">Read／Edit／Bash…</text>
+
+  <!-- 工具 -> 權限 -->
+  <path class="flow" d="M388,388 L388,410" marker-end="url(#mm-arrow)" />
+
+  <!-- 權限閘門 -->
+  <rect class="gate" x="292" y="412" width="192" height="52" rx="8" />
+  <text class="gatetext" x="388" y="435" text-anchor="middle">🔒 權限閘門</text>
+  <text class="s" x="388" y="453" text-anchor="middle">動到真實世界前先問你</text>
+
+  <!-- 權限 -> 外部世界 -->
+  <path class="flow" d="M388,464 L388,540" marker-end="url(#mm-arrow)" />
+  <text class="lbl" x="398" y="510" text-anchor="start">你核准後才執行</text>
+
+  <!-- 外部世界 -->
+  <rect class="box" x="252" y="544" width="272" height="66" rx="12" />
+  <text class="h" x="388" y="572" text-anchor="middle">你的電腦與外部世界</text>
+  <text class="s" x="388" y="592" text-anchor="middle">檔案、終端機指令、MCP 外部服務</text>
+
+  <!-- caption -->
+  <text class="cap" x="380" y="642" text-anchor="middle">權限是你的保險：Claude 動到真實世界之前，這道關卡先攔下來問你。</text>
+</svg>

@@ -1,6 +1,6 @@
 ---
 title: Claude Code 學習手冊
-description: 用繁體中文，把 Claude Code 的官方功能講清楚——原創教學、附官方出處、誠實講缺陷。
+description: 用繁體中文，把 Claude Code 的官方功能講清楚——原創教學、附官方出處、誠實講缺陷。兩種讀者分流：新手走學習路徑，老手直接查。
 template: splash
 base_version: '2.1.207'
 sources:
@@ -10,26 +10,47 @@ last_reviewed: 2026-07-13
 hero:
   tagline: 用中文把 Claude Code 講清楚——原創教學、每頁附官方出處、缺陷優先講。
   actions:
-    - text: 從「什麼是 Claude Code」開始
+    - text: 我是新手，帶我從頭開始
       # hero.actions 不會自動加 base 前綴（SPEC #1 已知坑，Phase 0 實證 404）——需手寫完整路徑
-      link: /learn-claude-code/reference/what-is-claude-code/
+      link: /learn-claude-code/learn/getting-started/
       icon: right-arrow
-    - text: 官方文件
-      link: https://docs.claude.com/en/docs/claude-code/overview
-      icon: external
+    - text: 我要查功能（功能參考）
+      link: /learn-claude-code/reference/what-is-claude-code/
+      icon: open-book
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid, LinkButton } from '@astrojs/starlight/components';
+import MentalModel from '../../components/MentalModel.astro';
 
 這裡是 Claude Code 官方功能的**繁體中文教學**。每一頁都是原創說明（不是翻譯搬運），
 標注內容依據的版本與官方連結，並且**缺陷與限制優先講清楚**——因為那正是你最需要先知道的。
 
-:::note[目前進度]
-本站正在建置中。**功能參考**（字典式一功能一頁）已上線；學習路徑、安心使用、情境索引等章節將陸續補上。
+## 🚪 你想怎麼開始？
+
+<CardGrid>
+	<Card title="我是新手 — 走學習路徑" icon="rocket">
+		從沒用過、甚至沒開過終端機也沒關係。跟著課程一步步走，用一個小專案邊做邊學。
+
+		[**開始學習路徑 →**](/learn-claude-code/learn/getting-started/)
+	</Card>
+	<Card title="我要查東西 — 直接搜尋" icon="magnifier">
+		已經在用、只想查某個功能怎麼運作？用左上角搜尋列（試試 `hooks`、`mcp`、`權限`），
+		或翻[功能參考](/learn-claude-code/reference/what-is-claude-code/)。
+	</Card>
+</CardGrid>
+
+## 🗺️ 先建立一張全景圖
+
+不管你是哪一種讀者，先看懂這張圖，後面每個功能都會更好懂：**一次對話裡，你的話、Claude、它看得到的東西（context）、工具、權限、記憶、subagent 是怎麼互動的。**
+
+<MentalModel caption="一次對話裡的全景圖——權限閘門是你的保險，Claude 動到真實檔案前會先問你。" />
+
+:::note[看不太懂沒關係]
+這張圖現在只要留個印象就好。學習路徑會在你實際遇到每個部分時，再一個一個講清楚。
 :::
 
-## 常用主題
+## ⭐ 常用主題
 
 <CardGrid>
 	<Card title="第一次接觸" icon="rocket">
@@ -44,8 +65,7 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 		[settings 與權限模式](/learn-claude-code/reference/settings-permissions/)
 		是你的安全保險。
 	</Card>
-	<Card title="自動化與外部資料" icon="setting">
-		認識 [hooks](/learn-claude-code/reference/hooks/) 與
-		[MCP 連接器](/learn-claude-code/reference/mcp/)。
+	<Card title="安心地用" icon="heart">
+		不確定什麼能給 AI、做壞了怎麼辦？學習路徑裡的「安心使用」章節專門講這些。
 	</Card>
 </CardGrid>

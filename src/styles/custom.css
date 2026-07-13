@@ -1,0 +1,125 @@
+/* 可讀性優先（受眾含中老年、非工程師親友）：放大內文字級、行距、段距，
+   減少「讀書、有壓力」的密集感。字級用 rem，標題會等比一起放大。
+   來源：2026-07-13 使用者回饋——預設字太小、看幾行就累。 */
+
+:root {
+  /* 字型：預設堆疊全是拉丁字型，中文會掉到系統 fallback（Windows 常掉到又細又難讀的
+     新細明體 PMingLiU）——這是「字大了還是難讀」的真正原因。明確指定好讀的中文黑體：
+     Mac 蘋方、Windows 微軟正黑、備援 Noto Sans TC。全用系統字型，不下載、不增負擔。
+     來源：2026-07-14 使用者回饋＋量測（字型堆疊無 CJK 字型）。 */
+  --sl-font: -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", "Hiragino Sans TC",
+    "Heiti TC", Roboto, "Helvetica Neue", Arial, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji";
+
+  /* Starlight 內文基準字級（預設約 1rem=16px）——整體放大一級 */
+  --sl-text-body: 1.125rem;       /* ~18px 內文 */
+  --sl-text-body-sm: 1rem;
+  --sl-line-height: 1.8;          /* 中文短行用 1.8，太鬆反而抓不到下一行 */
+}
+
+/* 內文區塊：加大字級與行距，段落之間留更多空氣 */
+.sl-markdown-content {
+  font-size: 1.125rem;
+  line-height: 1.8;
+}
+
+.sl-markdown-content p,
+.sl-markdown-content li {
+  line-height: 1.8;
+}
+
+/* 清單項目之間拉開，避免糊成一團 */
+.sl-markdown-content li + li {
+  margin-top: 0.4rem;
+}
+
+/* 段落與清單的上下距離加大，掃讀更輕鬆 */
+.sl-markdown-content :is(p, ul, ol) {
+  margin-block: 1.1em;
+}
+
+/* 標題與前後內容拉開距離，章節界線更清楚（老花眼也找得到段落起點） */
+.sl-markdown-content :is(h2, h3) {
+  margin-top: 2.2rem;
+  line-height: 1.4;
+}
+.sl-markdown-content h2 { font-size: 1.7rem; }
+.sl-markdown-content h3 { font-size: 1.35rem; }
+
+/* 提示框（note/tip/caution）內文也放大，這些常是最需要被看到的話 */
+.sl-markdown-content .starlight-aside {
+  font-size: 1.0625rem;
+}
+
+/* 表格字級略放大，手機上仍可讀 */
+.sl-markdown-content table {
+  font-size: 1.0625rem;
+}
+
+/* ── 導覽字級（原本左側 16px、右側 ToC 僅 13px，對中老年偏小）── */
+nav.sidebar a,
+nav.sidebar summary {
+  font-size: 1.0625rem;
+}
+starlight-toc a {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+/* 右側「本頁內容」標題 */
+.right-sidebar h2,
+starlight-toc > nav > p {
+  font-size: 1rem;
+}
+
+/* ── 裝飾：讓版面活潑、段落界線清楚，別像整片死字 ── */
+
+/* h2 左側強調色條：一眼看出章節起點 */
+.sl-markdown-content h2 {
+  padding-left: 0.7rem;
+  border-left: 5px solid var(--sl-color-accent);
+}
+/* h3 用較淡的強調 */
+.sl-markdown-content h3 {
+  padding-left: 0.55rem;
+  border-left: 3px solid var(--sl-color-accent-low);
+}
+
+/* 提示框更圓潤、留白更多，重點更跳出來 */
+.sl-markdown-content .starlight-aside {
+  border-radius: 0.75rem;
+  padding: 1.1rem 1.25rem;
+}
+.sl-markdown-content .starlight-aside__icon {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+/* 內容裡的卡片：hover 微浮起，較有互動感 */
+.sl-markdown-content .card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.sl-markdown-content .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 22px -10px var(--sl-color-accent);
+}
+
+/* 行內程式碼上底色，指令名更醒目（深淺色自動對比） */
+.sl-markdown-content :not(pre) > code {
+  background: var(--sl-color-accent-low);
+  color: var(--sl-color-accent-high);
+  border-radius: 0.35rem;
+  padding: 0.15em 0.4em;
+}
+
+/* details 摺疊區：加個柔和外框，跟內文區隔 */
+.sl-markdown-content details {
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: var(--sl-color-gray-6, transparent);
+}
+.sl-markdown-content details summary {
+  font-weight: 600;
+  cursor: pointer;
+}

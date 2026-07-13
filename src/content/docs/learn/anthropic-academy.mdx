@@ -1,0 +1,116 @@
+---
+title: 官方免費課程與證照（Anthropic Academy）
+description: Anthropic 官方線上課程平台 Anthropic Academy 導覽——課程對應本站哪一頁、全英文門檻、免費與付費現況一次講清楚。
+base_version: '2.1.207'
+sources:
+  - https://anthropic.skilljar.com
+  - https://anthropic.skilljar.com/claude-code-101
+  - https://anthropic.skilljar.com/claude-code-in-action
+  - https://anthropic.skilljar.com/introduction-to-agent-skills
+  - https://anthropic.skilljar.com/introduction-to-subagents
+  - https://anthropic.skilljar.com/introduction-to-model-context-protocol
+audience: both
+last_reviewed: 2026-07-13
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+:::note[先備知識]
+想先動手做再說？
+
+可以先去 [第一次啟動 Claude Code](../../learn/getting-started/)。
+
+本頁不是教學課，是「延伸資源」導覽。
+
+介紹官方另外開的一個免費課程平台，供你以後想更系統化學習時使用。
+:::
+
+## 🎓 這是什麼
+
+Anthropic Academy（`anthropic.skilljar.com`）是 Anthropic 官方開的線上課程平台。
+
+用的是第三方教學系統 Skilljar，不是 `docs.claude.com` 那個文件站，也跟本站沒有任何隸屬關係。
+
+本站只是幫你導覽，內容本身完全由 Anthropic 製作與擁有。
+
+截至查證當下（2026-07-13），平台上約有 20 門課，分成幾大類：
+
+- **Claude Code 相關**：`Claude Code 101`、`Claude Code in Action`、`Introduction to Agent Skills`、`Introduction to Subagents`、`Introduction to Model Context Protocol`（及進階版）
+- **一般 Claude 使用與開發**：`Claude 101`、`Claude Platform 101`、`Building with the Claude API`
+- **雲端整合**：`Claude with Amazon Bedrock`、`Claude with Google Cloud's Vertex AI`
+- **AI Fluency 系列**（給教育者、學生、企業、非營利組織等不同受眾的 AI 素養課程，非 Claude Code 專屬）
+- 其他如 `Introduction to Claude Cowork`（另一個產品線的操作課，跟 Claude Code 不是同一個工具）
+
+適合誰上：想要有結構、有進度、有完課證明的人。
+
+如果你偏好邊做邊查，本站的 [學習路徑](../../learn/getting-started/) 加 [功能參考](../../reference/what-is-claude-code/) 已經涵蓋大部分日常情境，不一定需要另外上課。
+
+**怎麼進去上課**：直接到官網 [anthropic.skilljar.com](https://anthropic.skilljar.com) 註冊帳號（Skilljar 帳號，跟你的 Claude 帳號是分開的兩件事），挑課、報名、開始上課即可，不需要透過本站中轉。
+
+:::caution[本站不轉載課程內容]
+Academy 的課程內容（影片、講義、練習題）沒有公開授權聲明，等同保留所有權利。
+
+本頁只寫「這些課大概教什麼、跟本站哪裡對得上」，不會翻譯、改寫或摘錄任何一堂課的實際教材。
+
+想學內容，請直接去官網上課。
+:::
+
+## 🗺️ 課程與本站學習路徑對應表
+
+下表左欄是 Academy 主要課程／學習路徑，右欄是本站對應可先讀的頁面。
+
+沒有對應的，誠實標「本站尚未涵蓋」，不硬湊。
+
+| Academy 課程 | 本站對應頁面 |
+| --- | --- |
+| `Claude Code 101` | [Claude Code 是什麼？](../../reference/what-is-claude-code/)、[第一次啟動 Claude Code](../../learn/getting-started/)、[hooks](../../reference/hooks/) |
+| `Claude Code in Action` | [第一個專案](../../learn/first-project/) |
+| `Introduction to Agent Skills` | [skills](../../reference/skills/) |
+| `Introduction to Subagents` | [subagents](../../reference/subagents/) |
+| `Introduction to Model Context Protocol` | [mcp](../../reference/mcp/) |
+| `Model Context Protocol: Advanced Topics` | [mcp](../../reference/mcp/)（本站頁面偏使用者視角，這門課是開發 MCP server／client 的進階實作，深度不完全對等） |
+| `Claude 101` | 本站尚未涵蓋（這門教一般 claude.ai 網頁版使用，本站聚焦 Claude Code） |
+| `Claude Platform 101`、`Building with the Claude API` | 本站尚未涵蓋（開發者用 API 建產品，非 Claude Code 終端機使用情境） |
+| `Introduction to Claude Cowork` | 本站尚未涵蓋（不同產品介面，非 Claude Code） |
+| `Claude with Amazon Bedrock`、`Claude with Google Cloud's Vertex AI` | 本站尚未涵蓋（雲端平台部署與帳務相關，非本站範圍） |
+| AI Fluency 系列（Educators／Students／Nonprofits／Small Businesses／Builders／Teaching／Framework） | 本站尚未涵蓋（泛用 AI 素養課程，非 Claude Code 專屬） |
+| `AI Capabilities and Limitations` | 本站尚未涵蓋 |
+
+CLAUDE.md 與規則設定沒有獨立一門課對應，Academy 把這部分內容拆在 `Claude Code 101` 裡帶過。
+
+本站則整理成獨立一課：[打造你自己的 CLAUDE.md](../../learn/your-own-claude-md/)。
+
+權限設定同理，`Claude Code 101` 有帶到，本站對應頁是 [設定與權限](../../reference/settings-permissions/)。
+
+## 🈶 語言、費用、證書（誠實說）
+
+<CardGrid>
+	<Card title="語言門檻" icon="translate">
+		全英文，介面跟內容都沒有中文版。
+
+		英文讀起來吃力也沒關係——先用本站中文教學打底，再去官網用課程練操作，會比硬啃英文輕鬆很多。
+	</Card>
+	<Card title="費用" icon="document">
+		實際點開查證的 5 門課——`Claude Code 101`、`Claude Code in Action`、`Introduction to Agent Skills`、`Introduction to Subagents`、`Introduction to Model Context Protocol`——都顯示「Register | FREE」，目前免費。
+
+		其餘約 15 門課沒有逐一開啟核實，⚠ 未驗證，請以官網當下顯示的價格為準。平台整體看起來以免費為主，但不保證所有課程永遠免費。
+	</Card>
+	<Card title="證書" icon="star">
+		完課後可拿到 Skilljar 平台的完課證明。
+
+		這是 Skilljar 系統內建的機制，實際證書格式與是否可對外驗證，以官網當下顯示為準。
+	</Card>
+</CardGrid>
+
+## 📜 證照 vs 只學內容
+
+本站的定位是幫你把內容學會、能實際上手用 Claude Code，不代辦證照、也不追求把 Academy 每一張證書集滿。
+
+如果你的目的是履歷上要有張證書，直接去官網上課考證。
+
+如果你只是想學會怎麼用，本站的學習路徑加 Academy 挑幾門對得上的課搭配著看，效率通常更好。
+
+## 👉 下一步
+
+- 想先動手：回到 [第一次啟動 Claude Code](../../learn/getting-started/) 或 [第一個專案](../../learn/first-project/)。
+- 想照著官方課程走：直接去 [anthropic.skilljar.com](https://anthropic.skilljar.com) 挑一門上表對應到你目前程度的課。

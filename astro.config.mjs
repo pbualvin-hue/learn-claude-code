@@ -9,6 +9,8 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Claude Code 學習手冊',
+			// 可讀性優先：放大字級/行距，對中老年、非工程師受眾友善（見 src/styles/custom.css）
+			customCss: ['./src/styles/custom.css'],
 			defaultLocale: 'root',
 			locales: {
 				root: { label: '繁體中文', lang: 'zh-TW' },
@@ -23,6 +25,34 @@ export default defineConfig({
 			// SPEC #6 資訊架構。Phase 1 只掛「功能參考」節（其餘節於 Phase 2/3 上線）。
 			// 順序顯式列出，對齊 SPEC #6 參考頁清單（不用 autogenerate，避免字母序打亂閱讀動線）。
 			sidebar: [
+				{
+					label: '開始使用',
+					items: [
+						{ label: '第一次啟動 Claude Code', slug: 'learn/getting-started' },
+						{ label: '怎麼跟 Claude 說話', slug: 'learn/how-to-talk-to-claude' },
+						{ label: '打造你自己的 CLAUDE.md', slug: 'learn/your-own-claude-md' },
+						{ label: '官方免費課程（Anthropic Academy）', slug: 'learn/anthropic-academy' },
+					],
+				},
+				{
+					label: '第一個專案',
+					items: [
+						{ label: '軌道總覽：邊做邊學', slug: 'learn/first-project' },
+						{ label: 'A：整理練習資料夾', slug: 'learn/first-project/track-a-organize-folder' },
+						{ label: 'B：文件批次摘要', slug: 'learn/first-project/track-b-batch-summary' },
+						{ label: '下一步地圖', slug: 'learn/first-project/next-step-map' },
+					],
+				},
+				{
+					label: '安心使用',
+					items: [
+						{ label: '你的資料會去哪裡', slug: 'trust/where-does-data-go' },
+						{ label: '什麼不該給 AI', slug: 'trust/what-not-to-share' },
+						{ label: '權限是你的保險', slug: 'trust/permissions-as-insurance' },
+						{ label: 'AI 會犯錯——怎麼驗證', slug: 'trust/verify-ai-output' },
+						{ label: 'git 是你的後悔藥', slug: 'trust/git-as-undo' },
+					],
+				},
 				{
 					label: '功能參考',
 					items: [

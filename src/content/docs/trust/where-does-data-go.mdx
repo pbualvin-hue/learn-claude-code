@@ -1,0 +1,92 @@
+---
+title: 你的資料會去哪裡
+description: 打字、開檔案、跟 Claude 對話之後，這些資料實際上跑去哪裡？哪些留在你的電腦，哪些送到 Anthropic，哪些可能又轉去別的服務。
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/security
+  - https://privacy.claude.com/en/articles/10023580-is-my-data-used-for-model-training
+  - https://www.anthropic.com/news/updates-to-our-consumer-terms
+audience: beginner
+last_reviewed: 2026-07-14
+---
+
+import { CardGrid, Card, Steps } from '@astrojs/starlight/components';
+
+:::note[先備知識]
+還沒用過 Claude Code 的話，先看[開始使用](../../learn/getting-started/)，知道基本操作長什麼樣子，再回來看這頁會更有感覺。
+:::
+
+你打開一個檔案、打一行字問 Claude 問題、按下 Enter。
+
+這些動作看起來都在你自己的電腦上發生。但實際上，有些資料真的只留在本機，有些會送出去給 Anthropic 的伺服器算過一輪再回來，有些甚至會經過 Claude Code 連接的其他工具（MCP、hooks）再轉送到第三方。
+
+搞懂這張地圖，你才知道「這個專案的資料，我可以放心丟給 Claude 嗎？」
+
+## 🗺️ 資料的三個去處
+
+<CardGrid>
+  <Card title="留在你本機" icon="document">
+    你的檔案本身、Claude Code 的設定檔、本機快取，預設都存在你的電腦裡。你沒做任何動作，這些東西不會自己跑出去。
+  </Card>
+  <Card title="送到 Anthropic 處理" icon="rocket">
+    你打的每句話、Claude 讀到的檔案內容，只要是要「讓 Claude 想一想再回答」，就一定要送到 Anthropic 的伺服器算過一輪。這是 Claude Code 能運作的必要條件，不是意外洩漏。
+  </Card>
+  <Card title="透過 MCP／hooks 送到第三方" icon="warning">
+    如果你自己接了 MCP 連接器（例如 Slack、Google Drive）或寫了 hooks，Claude 可能把資料再轉送到那個第三方服務。這一段完全看你裝了什麼，Anthropic 不會事先幫你逐一稽核。
+  </Card>
+</CardGrid>
+
+## 📨 送到 Anthropic 後，會不會被拿去訓練模型？
+
+**個人方案（Free / Pro / Max）**
+
+這件事有一個「開關」：如果你的帳號同意「用資料幫忙改善 Claude」，你的對話與 coding session 就可能被拿去改善模型；不同意，就不會。
+
+這個政策會隨方案和時間調整，官方隱私頁面也沒有用一句話白紙黑字寫「預設是開還是關」。所以與其在這裡背一個可能過期的答案，最可靠的做法是——**自己到設定頁，看你的帳號現在是開還是關**：
+
+<Steps>
+1. 瀏覽器登入 claude.ai
+2. 進「設定」（Settings）→「隱私」（Privacy）
+3. 找到「Help improve Claude」（模型改善）那個開關，看它現在是開還是關
+4. 不想被拿去訓練，就把它關掉；關掉之後的新對話與 coding session 就不會再被用來改善模型（已經送出去的不會追溯撤回）
+</Steps>
+
+:::note[以官方當下說明為準]
+資料保留多久、開關開跟關的差別，這類政策可能隨時間調整——一律以你設定頁與 Anthropic 官方隱私中心當下的說明為準，不要照單全收任何一篇教學（包含這篇）。
+:::
+
+**商業／團隊／API 方案（Claude for Work、Enterprise、API）**
+
+這些方案的資料，依商業條款規定不會被拿去訓練模型——跟個人方案是分開的規則。
+
+## 🔓 哪些情況資料真的會離開你的電腦
+
+- 你打字問問題、貼一段程式碼給 Claude 看 → 一定會送到 Anthropic 算過，這是它能回答你的前提
+- 你叫 Claude 讀某個檔案 → 那個檔案的內容，會變成送給 Anthropic 的內容的一部分
+- 你裝了 MCP 連接器（例如接 Gmail、Notion、公司內部系統）→ 那個連接器可能把資料送去它自己的伺服器，不是 Anthropic 的伺服器
+- 你自己寫了 hook（在某個時機自動跑一段 script）→ 那段 script 想把資料送去哪裡都可以，責任在寫這個 hook 的人身上，可能是你自己，也可能是你抓來的別人寫的 hook
+- 你讓 Claude 用網路工具抓網頁內容 → Claude 會連到你指定的網址抓資料回來
+
+官方安全文件寫得很直白：Anthropic 會審核 MCP 連接器上不上架自己的目錄，但**不會**幫你資安稽核每一個連接器在做什麼。
+
+:::caution
+MCP 伺服器不是 Anthropic 寫的，也沒有被逐一資安稽核過。裝之前先想一下：這個連接器做的事，值得讓它拿到我的資料嗎？
+:::
+
+## 🧭 你可以怎麼做
+
+<Steps>
+1. 處理真的機密的專案前，先停下來想一下：這段對話，我要不要讓它被拿去改善模型？
+2. 不想被拿去訓練，就照上面的步驟去隱私設定關掉那個開關
+3. 裝任何 MCP 連接器前，先確認是誰做的、它要跟你要什麼權限
+4. 真的很敏感的東西（密碼、健康紀錄、身分證字號），直接跳去[不該分享給 Claude 的東西](../../trust/what-not-to-share/)，那頁有具體清單
+5. 覺得 Claude Code 動不動就跳出來問「要不要允許」很煩，看[權限就是保險](../../trust/permissions-as-insurance/)，會解釋這個「多問一次」其實是在保護你
+</Steps>
+
+## 下一步
+
+- 想知道具體「哪些東西不要給 Claude 看」，去[不該分享給 Claude 的東西](../../trust/what-not-to-share/)
+- 想懂 Claude Code 一直跳出來問「要不要允許」在保護什麼，去[權限就是保險](../../trust/permissions-as-insurance/)
+- 想知道 MCP 連接器實際上是什麼、怎麼裝得比較安全，去[MCP 參考](../../reference/mcp/)
+- 想知道 hooks 是什麼、能做到什麼程度，去[hooks 參考](../../reference/hooks/)
+- 想自己動手調整權限規則，去[權限設定參考](../../reference/settings-permissions/)

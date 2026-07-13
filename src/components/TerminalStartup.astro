@@ -1,0 +1,20 @@
+---
+// Claude Code 啟動畫面「示意圖」（非真實截圖）。與 MentalModel 同一路子：
+// 版控的 .svg 源碼經 ?raw inline 進頁面，深淺色自適應、零 client-side JS。
+// 明確標示為示意，不假冒真實介面截圖（誠實教學 Non-Negotiable #10）。
+import terminalSvg from '../assets/diagrams/terminal-startup.svg?raw';
+---
+
+<figure class="terminal-startup">
+  <Fragment set:html={terminalSvg} />
+</figure>
+
+<style>
+  .terminal-startup {
+    margin: 1.5rem 0;
+  }
+  .terminal-startup :global(svg) {
+    display: block;
+    margin-inline: auto;
+  }
+</style>
