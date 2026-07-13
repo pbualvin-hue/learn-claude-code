@@ -11,9 +11,9 @@
 # top 風險假設的 30 分鐘級實測；✓ = 規劃期已驗證
 1. ✓ changelog 可程式化取得：raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md（2026-07-11 實測成功）
 2. ✓ 排程機制存在且可操作（2026-07-11 已確認 scheduled-tasks 工具可用）
-3. ☐ Starlight hello-world 在本機（Windows/npm）build 成功 → push → GitHub Actions → Pages 公開網址可開（驗證最脆弱的整合鏈：建置＋部署）；並驗證子路徑部署：CSS 正常載入＋抽 5 條內部連結全通（base path 已知坑，見 SPEC #1）
-4. ☐ Pagefind 搜尋實測：英文指令名 3 組（如 hooks、mcp、/config）＋中文詞 3 組，記錄命中品質，決定情境索引頁的補償力道
-5. ☐ 排程 agent 端到端小實驗：建一個測試排程任務，能讀 changelog 並產出一個檔案／draft PR（Phase 3 的可行性前哨，失敗不擋 Phase 1-2，但要提前知道）
+3. ✓ Starlight hello-world 建置部署鏈全通（2026-07-13：本機 build／Actions／Pages／子路徑 CSS／5 條內部連結皆過；hero.actions 忽略 base 的已知坑實證 404 並修復——CI 需 pin Node 24）
+4. ✓ Pagefind 實測（2026-07-13）：英文指令名 hooks/mcp//config 全命中排第一；中文詞「權限／排程／記憶」與長句精準比對均命中——補償力道可放輕，情境索引頁照計畫保留
+5. ▲ 排程 agent 端到端：觸發準時＋session 啟動＋工具執行已證實；無人值守全程產出 draft PR 未一次成功（三道啟動閘門與解法見 DECISIONS 2026-07-13），末段驗證併入 Phase 3 部署重測——依本項原定位不擋 Phase 1-2
 
 ## 目錄結構
 ```
@@ -44,6 +44,18 @@ learn-claude-code/
 - 搜「hooks」「mcp」各能找到正確頁面
 - 抽 3 頁對照官方文件無錯誤描述；每頁都有 base_version 與官方連結
 - footer 顯示內容基準版本與更新日期
+
+### Phase 1 執行清單（2026-07-13 使用者確認，開新 session 執行）
+A. 骨架與機制：
+1. src/content.config.ts——zod 強制 frontmatter（base_version／sources≥1／audience／last_reviewed，缺＝build fail，SPEC #4）
+2. src/data/content-state.json——狀態檔初始化（SPEC #7）
+3. src/components/Footer.astro——footer 覆寫：基準版本＋更新日＋免責聲明＋© 保留所有權利（SPEC #11）
+4. astro.config.mjs——側欄改 SPEC #6 資訊架構（Phase 1 只掛功能參考節）＋掛 footer
+5. src/content/docs/index.mdx——首頁 Phase 1 簡版（雙入口分流完整版屬 Phase 2）
+6. 刪除 phase0-test/ 三頁＋guides/example.md＋reference/example.md（使用者已核准刪除 2026-07-13，新 session 不需再問）
+B. 參考頁 14 頁（SPEC #6 清單；每頁：入門段→進階段→限制與注意→下一步；草稿委派 agent 產出、主對話審核；base_version 取草稿日 changelog 最新版）
+C. 驗收：PLAN Phase 1 完成標準逐項附證據＋merge 前黃金抽查
+注意：Phase 0 的 push 一次性授權已結束，Phase 1 的 git push 需重新向使用者確認（或於開工時徵求本 Phase 授權）。
 
 ## Phase 2 — 學習路徑＋融會貫通層＋情境索引
 實作項：
