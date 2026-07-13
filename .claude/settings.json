@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch*)",
+      "Bash(git branch*)",
+      "Bash(git checkout*)",
+      "Bash(git switch*)",
+      "Bash(git stash*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git push*)",
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(gh pr create*)",
+      "Bash(curl https://raw.githubusercontent.com/anthropics/claude-code/*)",
+      "PowerShell(git fetch*)",
+      "PowerShell(git branch*)",
+      "PowerShell(git checkout*)",
+      "PowerShell(git switch*)",
+      "PowerShell(git stash*)",
+      "PowerShell(git add*)",
+      "PowerShell(git commit*)",
+      "PowerShell(git push*)",
+      "PowerShell(git status*)",
+      "PowerShell(git log*)",
+      "PowerShell(git diff*)",
+      "PowerShell(gh pr create*)",
+      "PowerShell(Invoke-WebRequest -Uri https://raw.githubusercontent.com/anthropics/claude-code/*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Write(_experimental/**)",
+      "Edit(_experimental/**)"
+    ]
+  }
+}
