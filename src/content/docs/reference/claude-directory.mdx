@@ -1,0 +1,66 @@
+---
+title: .claude 目錄結構
+description: 專案層與使用者層的 .claude 目錄各放什麼、兩者的差別，給開發者的完整對照。
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/settings
+  - https://docs.claude.com/en/docs/claude-code/memory
+audience: dev
+last_reviewed: 2026-07-13
+---
+
+`.claude` 資料夾就像這個專案的「個人設定抽屜」：裡面放的是「Claude 在這個專案該遵守什麼規則」「哪些操作不用每次都問」
+「有沒有自訂的捷徑指令」這類設定。專案的抽屜大家共用（進版控、team 一起看），你自己電腦裡還有一個個人抽屜
+（`~/.claude`），放的是不管開哪個專案都要套用的個人習慣。
+
+## 進一步了解
+
+### 專案層：`.claude/`（放在專案根目錄）
+
+| 路徑 | 放什麼 | 進版控？ |
+| --- | --- | --- |
+| `CLAUDE.md`（或 `.claude/CLAUDE.md`） | 團隊共用的專案指令：架構、慣例、常用指令 | 是 |
+| `CLAUDE.local.md` | 你個人的專案偏好（測試資料、本機網址等） | 否，加進 `.gitignore` |
+| `.claude/settings.json` | 團隊共用設定：權限規則、環境變數等 | 是 |
+| `.claude/settings.local.json` | 你個人的設定覆寫 | 否 |
+| `.claude/rules/*.md` | 依檔案路徑條件載入的細部規則（如只在改 `*.ts` 時載入） | 是 |
+| `.claude/skills/<name>/SKILL.md` | 專案技能，會產生 `/<name>` 指令 | 是 |
+| `.claude/commands/<name>.md` | 舊版自訂指令格式，效果等同 skill，目前仍可運作 | 是 |
+| `.claude/agents/*.md` | 專案專屬的 subagent 設定 | 是 |
+| `.claude/output-styles/` | 輸出風格設定 | 是（⚠ 未驗證：官方文件僅提及此路徑存在，未詳述內部檔案格式） |
+
+### 使用者層：`~/.claude/`（你的家目錄下）
+
+套用到你電腦上**所有專案**，不會跟團隊共用：
+
+| 路徑 | 放什麼 |
+| --- | --- |
+| `~/.claude/CLAUDE.md` | 你的個人全域指令（程式風格偏好、個人常用工具等） |
+| `~/.claude/settings.json` | 個人層級設定，優先度低於專案設定 |
+| `~/.claude/skills/`、`~/.claude/agents/`、`~/.claude/rules/`、`~/.claude/output-styles/` | 上述各項目的個人版本，任何專案都能用 |
+| `~/.claude/projects/<project>/memory/` | auto memory 存放處：Claude 自己寫的筆記，含 `MEMORY.md` 索引檔與其他主題檔 |
+
+`~/.claude/projects/<project>/memory/` 比較特別：不是你手寫的規則，是 Claude 在對話中自己判斷「這個以後可能有用」而寫下的筆記，
+機器本地儲存，同一個 git repo 的所有 worktree 共用一份，但不會同步到別台電腦。
+
+### 兩層怎麼疊加
+
+同名設定衝突時，專案層優先於使用者層（例如 `.claude/settings.json` 的規則會蓋過 `~/.claude/settings.json`）。
+另外還有第三層「managed / 組織層」（如 macOS 的 `/Library/Application Support/ClaudeCode/`），由 IT／DevOps 集中管理、
+一般使用者無法覆蓋，多半只在公司統一發放電腦時才會遇到，這裡不展開。
+
+## 限制與注意
+
+- **`.claude/commands/` 與 `.claude/skills/` 同名時 skill 優先**：兩者效果相同（都會產生 `/name` 指令），但同時存在時 Claude Code 會用 skill 版本，不是報錯，也不是兩者都跑。
+- **`output-styles/` 的內部格式本頁未驗證**：官方文件確認這個路徑存在（在說明「使用者層可以放什麼」時提到），但沒有進一步文件描述檔案該怎麼寫，本站目前也還沒找到更詳細的官方頁面，先標記為 ⚠ 未驗證。
+- **`.claude/settings.local.json` 不一定完全免審查**：它通常是「你自己的檔案」不用經過 workspace trust 確認，但如果這個檔案被 commit 進 repo、或 `.claude` 本身是 symlink，就會被當成「repo 可能提供的檔案」，一樣要通過信任確認才會套用。
+- **專案 `.claude/settings.json` 的 allow 規則不是加了就馬上生效**：第一次在某個資料夾用 Claude Code 時，要先通過畫面上的信任確認（trust dialog），allow 規則跟 `additionalDirectories` 才會真的套用。
+- **這個結構會隨版本演進**：例如「custom commands 併入 skills」是相對晚近的變動，本頁以 base_version 2.1.207 為準，未來版本的目錄結構可能再變。
+
+## 下一步
+
+- [CLAUDE.md 與記憶](../claude-md-memory/)：`CLAUDE.md` 怎麼寫、多層 `CLAUDE.md` 怎麼疊加載入
+- [settings 與權限模式](../settings-permissions/)：`settings.json` 完整欄位與權限規則語法
+- [slash commands 總覽](../slash-commands/)：`.claude/commands/`、`.claude/skills/` 實際會變成什麼指令
+- [內建工具](../built-in-tools/)：權限規則實際管的是哪些工具
+- [hooks](../hooks/)：`.claude/settings.json` 裡的 hooks 設定怎麼寫

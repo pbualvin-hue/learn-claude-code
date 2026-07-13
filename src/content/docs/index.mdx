@@ -1,41 +1,51 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
-template: splash # Remove or comment out this line to display the site sidebar on this page.
+title: Claude Code 學習手冊
+description: 用繁體中文，把 Claude Code 的官方功能講清楚——原創教學、附官方出處、誠實講缺陷。
+template: splash
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/overview
+audience: both
+last_reviewed: 2026-07-13
 hero:
-  tagline: Congrats on setting up a new Starlight project!
-  image:
-    file: ../../assets/houston.webp
+  tagline: 用中文把 Claude Code 講清楚——原創教學、每頁附官方出處、缺陷優先講。
   actions:
-    - text: Example Guide
+    - text: 從「什麼是 Claude Code」開始
       # hero.actions 不會自動加 base 前綴（SPEC #1 已知坑，Phase 0 實證 404）——需手寫完整路徑
-      link: /learn-claude-code/guides/example/
+      link: /learn-claude-code/reference/what-is-claude-code/
       icon: right-arrow
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
+    - text: 官方文件
+      link: https://docs.claude.com/en/docs/claude-code/overview
       icon: external
       variant: minimal
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
+這裡是 Claude Code 官方功能的**繁體中文教學**。每一頁都是原創說明（不是翻譯搬運），
+標注內容依據的版本與官方連結，並且**缺陷與限制優先講清楚**——因為那正是你最需要先知道的。
 
-<CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+:::note[目前進度]
+本站正在建置中。**功能參考**（字典式一功能一頁）已上線；學習路徑、安心使用、情境索引等章節將陸續補上。
+:::
+
+## 常用主題
+
+<CardGrid>
+	<Card title="第一次接觸" icon="rocket">
+		先讀 [什麼是 Claude Code](/learn-claude-code/reference/what-is-claude-code/)
+		與 [安裝與啟動](/learn-claude-code/reference/install/)。
 	</Card>
-	<Card title="Change page layout" icon="document">
-		Delete `template: splash` in `src/content/docs/index.mdx` to display a
-		sidebar on this page.
+	<Card title="固定你的偏好" icon="pencil">
+		用 [CLAUDE.md 與記憶](/learn-claude-code/reference/claude-md-memory/)
+		讓 Claude 記住你的習慣。
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
+	<Card title="控制它能做什麼" icon="approve-check">
+		[settings 與權限模式](/learn-claude-code/reference/settings-permissions/)
+		是你的安全保險。
 	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
-	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	<Card title="自動化與外部資料" icon="setting">
+		認識 [hooks](/learn-claude-code/reference/hooks/) 與
+		[MCP 連接器](/learn-claude-code/reference/mcp/)。
 	</Card>
 </CardGrid>

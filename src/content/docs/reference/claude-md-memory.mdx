@@ -1,0 +1,61 @@
+---
+title: CLAUDE.md 與記憶
+description: 讓 Claude 記住專案慣例與個人偏好的檔案機制：CLAUDE.md 怎麼寫、放哪裡，跟自動記憶有何不同。
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/memory
+audience: both
+last_reviewed: 2026-07-13
+---
+
+`CLAUDE.md` 就像貼在冰箱上的家規紙條——不是每次都要對新來的人再唸一遍，而是寫下來，讓每個進門的人一看就知道這個家怎麼運作。Claude Code 每次開新對話都是「重開機」，不會記得你上次交代過什麼；`CLAUDE.md` 就是解決這件事的機制：你把慣例、偏好、規則寫成一份 Markdown 檔案，Claude 開始工作前會先讀一遍。
+
+除了「你手寫」的 `CLAUDE.md`，Claude Code 還有「自動記憶」（auto memory）：Claude 會自己觀察你的修正與偏好，寫成筆記存在專案的記憶資料夾裡，下次自動載入。可以把 `CLAUDE.md` 想成你訂的規定，自動記憶則是 Claude 自己做的工作筆記。
+
+## 進一步了解
+
+### 放在哪裡，決定誰看得到
+
+| 層級 | 位置 | 用途 |
+| --- | --- | --- |
+| 使用者層 | `~/.claude/CLAUDE.md` | 你個人的偏好，套用到你電腦上所有專案 |
+| 專案層 | `./CLAUDE.md` 或 `./.claude/CLAUDE.md` | 團隊共用規則，進版控、跟大家一起看 |
+| 本機層 | `./CLAUDE.local.md` | 只在這台機器、這個專案生效的個人偏好，**要加進 `.gitignore`**，不進版控 |
+
+這些檔案在對話開始時會被合併載入，載入順序是「範圍大的先讀、範圍小的後讀」，離你目前工作目錄越近的規則，會出現在越後面（也就是離 Claude 決策時越近）。組織也可以部署一份全機適用的「管理層」`CLAUDE.md`，一般個人專案用不到，這裡先跳過。
+
+想快速生成起點，可以在專案目錄跑 `/init`，Claude 會掃描程式庫，自動整理出建置指令、測試方式、專案慣例，寫成 `CLAUDE.md` 草稿讓你調整。
+
+### 三行起步，而不是抄一份大模板
+
+官方建議把 `CLAUDE.md` 控制在 200 行以內——檔案越長，佔用的 context 越多，Claude 照做的準確度反而下降。實務上更好的心法是「三行起步」：不要一開始就把網路上看到的完整範本整份貼進去，而是先只寫 2、3 條你真的會重複用到的規則，之後每次遇到「Claude 又犯了同一個錯」「code review 抓到同樣的問題」，才加一條進去。
+
+寫規則時越具體越好驗證：
+
+```markdown
+# CLAUDE.md
+- 套件管理用 pnpm，不要用 npm
+- 送出前先跑 `pnpm test`，測試沒過不要 commit
+- API handler 都放在 `src/api/handlers/`
+```
+
+「用 2 格縮排」比「把格式弄好」更容易讓 Claude 照做；「送出前跑 `pnpm test`」比「記得測試」更明確。
+
+### 想在多份檔案間共用內容
+
+`CLAUDE.md` 支援 `@path/to/file` 語法匯入其他檔案，例如 `@README` 會把 README 的內容也載進 context（若只是想在文字裡提到檔名而不匯入，用反引號包住即可，例如 `` `@README` ``）。如果專案已經有 `AGENTS.md` 給其他工具用，可以在 `CLAUDE.md` 裡用 `@AGENTS.md` 匯入，避免兩邊維護重複內容。
+
+## 限制與注意
+
+- **`CLAUDE.md` 不是強制規則，是「context」**：Claude 會盡量照做，但不保證百分之百遵守，尤其是指示模糊或幾份檔案彼此矛盾的時候。如果你要的是「無論如何都要擋下某個動作」，那是 [hooks](../hooks/) 的工作，不是 `CLAUDE.md`。
+- 檔案太長會反效果：內容塞太多，Claude 遵從度反而下降，也更吃 context 額度。
+- 自動記憶的索引檔 `MEMORY.md` 每次只會載入前 200 行或 25KB，超過的部分要 Claude 主動去讀其他主題筆記檔才會用到，不是全部自動塞進 context。
+- 個人化內容公開分享前務必去識別化：`~/.claude/CLAUDE.md` 這類個人偏好檔常常含有真實路徑或私人習慣，貼到公開場合前要先清過。
+- `CLAUDE.local.md` 一定要記得加進 `.gitignore`，否則等於把「只給自己看」的內容洩漏給整個團隊。
+
+## 下一步
+
+- [settings 與權限模式](../settings-permissions/)——`CLAUDE.md` 只是建議，真正能擋下動作的是權限規則
+- [hooks](../hooks/)——需要「一定要執行」而非「盡量照做」時使用
+- [常見問題 FAQ](../faq/)
+- [安裝與啟動](../install/)

@@ -1,0 +1,76 @@
+---
+title: 背景任務與排程
+description: 讓 Claude Code 不擋住你手邊工作、或按表操課自動執行——背景 session、/loop、Routines 三種機制的差異
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/scheduled-tasks
+  - https://docs.claude.com/en/docs/claude-code/routines
+  - https://docs.claude.com/en/docs/claude-code/agent-view
+  - https://docs.claude.com/en/docs/claude-code/headless
+audience: dev
+last_reviewed: 2026-07-13
+---
+
+有兩種情境你會希望 Claude Code 不要一直卡在你眼前：一種是「這件事交給你去忙，我先做別的事」——像請人顧一鍋湯，你先去忙別的，只要湯滾了會叫你；另一種是「每天早上九點固定幫我做這件事」——像設好鬧鐘，時間到了自動執行，不用你每次手動開口。Claude Code 對這兩種情境都有對應的功能，這頁分別介紹。
+
+## 進一步了解
+
+### 背景執行（不擋住你）
+
+在一個對話裡輸入 `/background` 或 `/bg`（或在空白提示按 `←`），可以把目前這個 session 丟到背景繼續跑，你的終端機立刻空出來做別的事。也可以從一開始就這樣啟動：
+
+```bash
+claude --bg "investigate the flaky SettingsChangeDetector test"
+```
+
+用 `claude agents` 打開統一的儀表板（agent view），一次看多個背景 session 的狀態——工作中、等你回覆、已完成、失敗。背景 session 會自動搬進獨立的 git worktree（`.claude/worktrees/` 底下），所以同時開好幾個 session 各自改檔案不會互撞。
+
+這跟 [subagent](../subagents/) 不一樣：subagent 是「同一個 session 裡」委派出去、做完就把摘要交回來的子任務；背景 session 是「開好幾個獨立、平行的 session，集中在一個畫面監控」，各自可以是完整的互動對話。
+
+### 排程執行（按表操課）
+
+官方提供三種排程方式，取捨不同：
+
+| | Routines（雲端） | Desktop 排程 | `/loop`（session 內） |
+| --- | --- | --- | --- |
+| 跑在哪 | Anthropic 管理的雲端 | 你的電腦 | 你的電腦 |
+| 電腦要開著嗎 | 不用 | 要 | 要 |
+| 需要開著對話 session 嗎 | 不用 | 不用 | 要 |
+| 最小間隔 | 1 小時 | 1 分鐘 | 1 分鐘 |
+| 存活時間 | 持續存在，可暫停/刪除 | 持續存在 | 建立後 **7 天自動過期** |
+
+`/loop` 是三者裡最快上手的，直接在對話裡打：
+
+```text
+/loop 5m check if the deployment finished and tell me what happened
+```
+
+不帶提示文字的 `/loop` 會跑內建的維護提示（處理未完成的工作、顧目前分支的 PR）；要停下來按 `Esc`。
+
+Routines 是綁在你 claude.ai 帳號上的排程設定，用 `/schedule daily PR review at 9am` 這類自然語言在 CLI 建立，或到官方的 routines 網頁設定，能設定固定排程、API 觸發（收到 HTTP POST 就跑一次），或 GitHub 事件觸發（例如某個 repo 開新 PR 就自動跑一次）。因為跑在 Anthropic 的雲端環境，執行時是全自動、沒有權限提示畫面。
+
+### 非互動模式（`-p` / headless）
+
+除了「背景」和「排程」，還有一個常被搭配使用的第三個概念：非互動模式。用 `claude -p "指令"` 讓 Claude 執行一次就結束，不進入互動畫面，適合寫進 shell script 或 CI pipeline：
+
+```bash
+cat build-error.txt | claude -p "concisely explain the root cause of this build error"
+```
+
+加 `--output-format json` 可以拿到結構化的結果（含花費、session ID），方便程式解析而不是用眼睛讀。這是把 Claude Code 接進「排程系統」的常見做法——例如搭配 GitHub Actions 的 schedule trigger，讓 CI 平台每天固定時間呼叫一次 `claude -p`，這種用法在官方文件中被歸類為 GitHub Actions／GitLab CI 整合，不是本頁介紹的三種排程機制之一。
+
+## 限制與注意
+
+- 三種排程方式的取捨要先想清楚，不要照預設選：`/loop` 最快上手但你的電腦跟終端機都得開著，而且**建立後 7 天自動過期**；Desktop 排程要電腦開機才會跑；只有 Routines 是電腦關機也照常執行，但它需要 claude.ai 訂閱帳號並透過網頁或 `/schedule` 設定，不是裝了 CLI 就自動有的功能。
+- Routines 目前官方標示為 **research preview**（研究預覽），行為、限制、API 介面都可能改動——別把重要、不能出錯的流程綁在還在預覽階段的功能上。
+- `/loop` 是 session-scoped（綁在單一對話上）：開新對話或關掉終端機，排程就沒了。`claude --resume` 只能救回還沒過期的排程任務，背景的 Bash／monitor 任務完全不會被救回，要重新啟動。
+- 排程觸發的時間不是精準到秒：`/loop` 跟 Routines 都有內建的「錯開」機制（jitter），避免大家整點同時打 API，實際觸發時間可能比設定的時間晚幾分鐘到半小時。
+- 別把這裡的排程機制當成 Linux `crontab` 的直接替代品：`/loop` 用的是 5 欄位 cron 語法的子集（不支援 `L`、`W`、`?` 等擴充語法），Routines 的最小間隔是 1 小時，都比系統層級的 cron 限制更多。
+
+## 下一步
+
+- [subagents](../subagents/)
+- [skills](../skills/)
+- [hooks](../hooks/)
+- [settings 與權限模式](../settings-permissions/)
+- [slash commands 總覽](../slash-commands/)

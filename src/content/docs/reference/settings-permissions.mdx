@@ -1,0 +1,79 @@
+---
+title: settings 與權限模式
+description: settings.json 存放哪些設定、權限規則怎麼運作，以及為什麼它是你真正能信賴的安全保險。
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/settings
+  - https://docs.claude.com/en/docs/claude-code/permissions
+audience: both
+last_reviewed: 2026-07-13
+---
+
+把 Claude Code 想成一位很能幹的新助理：剛開始共事時，你會希望他做每一件事之前都先問你一聲「這個可以做嗎？」；熟悉之後，你可能放心讓他自己處理例行公事（例如整理檔案），但重要的事（例如刪東西、對外送出請求）還是想先審過。`settings.json` 加上「權限規則」，就是你設定「哪些事可以自動做、哪些事一定要先問我」的地方。
+
+上一頁提到 [`CLAUDE.md`](../claude-md-memory/) 只是「建議」，Claude 會盡量照做但不保證。權限規則不一樣——它是 Claude Code 這個工具本身在執行層擋下來的關卡，不管 Claude 想不想做，符合擋下條件就是擋下來，這也是它被稱作「安全保險」的原因。
+
+## 進一步了解
+
+### settings.json 放在哪裡
+
+| 範圍 | 位置 | 誰會用到 |
+| --- | --- | --- |
+| 使用者層 | `~/.claude/settings.json` | 你個人在所有專案的設定 |
+| 專案層 | `.claude/settings.json` | 團隊共用，進版控 |
+| 本機層 | `.claude/settings.local.json` | 只有你自己的專案內覆寫，不進版控 |
+| 管理層 | 由組織 IT 統一部署 | 組織政策，個人設定無法覆蓋 |
+
+多份設定同時存在時，優先順序是：管理層 > 命令列參數 > 本機層 > 專案層 > 使用者層。但**權限規則是例外**：來自不同層級的 allow / deny / ask 規則會合併在一起套用，不是後面蓋掉前面。
+
+### 權限規則的語法
+
+`settings.json` 裡的 `permissions` 欄位用三個陣列控制：
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run test *)",
+      "Read(~/.zshrc)"
+    ],
+    "deny": [
+      "Bash(curl *)",
+      "Read(./.env)"
+    ]
+  }
+}
+```
+
+- `allow`：符合的動作自動放行，不再詢問
+- `deny`：符合的動作直接擋下，Claude 連嘗試的機會都沒有
+- `ask`：符合的動作每次都跳出來問你
+
+規則比對順序固定是 **deny 先、ask 次、allow 最後**，第一個比對到的規則就決定結果，跟規則寫得多精細無關。這是常見誤解：很多人以為「寫得越具體的規則優先」，但一條寬鬆的 `Bash(aws *)` deny 規則，會擋住所有符合的呼叫，即使同時有一條更精細的 `Bash(aws s3 ls)` allow 規則也一樣。
+
+### 權限模式
+
+除了逐條規則，Claude Code 還有幾種整體「模式」，可以用 `defaultMode` 設定，或在對話中切換：
+
+| 模式 | 行為 |
+| --- | --- |
+| `default`（介面上顯示為 Manual） | 標準行為：每種工具第一次使用都先問你 |
+| `acceptEdits` | 自動接受檔案編輯，以及 `mkdir`／`mv`／`cp` 這類常見檔案操作 |
+| `plan` | Claude 只讀檔案、跑唯讀指令做調查，不會真的動你的原始碼 |
+| `bypassPermissions` | 幾乎跳過所有提示（少數如刪除根目錄/家目錄的指令仍會攔） |
+
+`bypassPermissions` 風險最高：官方明確建議只在容器或 VM 這類「壞了也沒關係」的隔離環境用，一般開發專案不建議開啟。
+
+## 限制與注意
+
+- **權限規則擋的是 Claude Code 這個工具，不是 Claude 這個模型**：`CLAUDE.md` 裡寫「不要跑 `rm -rf`」只是建議，Claude 有可能沒照做；但 `permissions.deny` 裡寫的規則，是 Claude Code 直接不執行，兩者不能互相替代。
+- 用萬用字元限制 Bash 指令的參數其實很脆弱。官方文件直接點名這個坑：例如想寫一條規則只允許 curl 抓 GitHub 網址，`Bash(curl http://github.com/ *)` 這種寫法看似安全，實際上加個參數（`curl -X GET http://github.com/...`）、換個協定（`https://`）、或透過會轉址的短網址，都能繞過去。真的要限制對外連線，建議改用 deny 擋掉 `curl`／`wget`，改用 `WebFetch(domain:example.com)` 這種以網域為單位的規則。
+- 專案層 `.claude/settings.json` 裡的 `allow` 規則，要等你手動通過「workspace trust」的信任對話框才會真的生效——不是寫進檔案就立刻有效，這點常被誤會。`deny` 和 `ask` 規則不受此限制，因為它們只會限制、不會放行。
+- `bypassPermissions` 模式仍然會攔下針對根目錄或家目錄的刪除指令（例如 `rm -rf /`），但這是最後一道防線，不是常態安全機制，不要把它當成「開了也沒差」。
+
+## 下一步
+
+- [CLAUDE.md 與記憶](../claude-md-memory/)——想讓 Claude「傾向」做什麼，寫在這裡
+- [hooks](../hooks/)——想在特定時機強制跑一段檢查邏輯時使用
+- [常見問題 FAQ](../faq/)
+- [MCP 連接器](../mcp/)

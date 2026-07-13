@@ -1,0 +1,56 @@
+---
+title: 常見問題 FAQ
+description: 第一次接觸 Claude Code 最常問的問題：要不要付費、資料安全、支援平台、做壞了怎麼救回來。
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/overview
+  - https://docs.claude.com/en/docs/claude-code/troubleshooting
+  - https://docs.claude.com/en/docs/claude-code/data-usage
+  - https://docs.claude.com/en/docs/claude-code/checkpointing
+audience: both
+last_reviewed: 2026-07-13
+---
+
+這裡集中回答第一次接觸 Claude Code 的人最常問的問題，每題盡量簡短，需要更完整說明的會連到對應的參考頁。
+
+**要付費嗎？**
+大部分使用方式需要 Claude Pro／Max 訂閱、Team／Enterprise 方案，或是 Anthropic Console（API 用量計費）帳號其中之一。實際金額請直接查官方定價頁，本站不重複標數字，避免內容跟不上調價。
+
+**Claude Code 支援哪些平台？**
+終端機（macOS、Linux、WSL、Windows）、VS Code、JetBrains 系列 IDE、桌面 App，以及瀏覽器版（claude.ai/code）都可以用，而且用的是同一套底層引擎——你的 `CLAUDE.md`、`settings.json`、MCP 設定在這些平台之間是共用的。
+
+**跟網頁版 Claude（一般聊天視窗）差在哪？**
+一般網頁對話只能生成文字回覆，不會碰你的檔案。Claude Code 是「會動手做事」的工具：能讀你的整個程式庫、直接改檔案、跑指令、開 PR。瀏覽器版的 Claude Code（claude.ai/code）本質上還是 Claude Code，只是執行環境搬到雲端虛擬機，不佔用你自己的電腦。
+
+## 更多問題
+
+**它一直跳出來問我要不要允許某個動作，怎麼辦？**
+這是[權限提示](../settings-permissions/)，是 Claude Code 刻意設計的安全機制，不是故障。如果某個動作你確定常常要做，可以在提示裡選「不要再問」，或直接跑 `/permissions` 管理規則，把它加進 allow 清單。
+
+**我的程式碼、對話會不會被拿去訓練模型？**
+依帳號類型而定：Free／Pro／Max 這類個人帳號，官方預設會依你自己在隱私設定裡選的開關決定是否用於訓練；Team／Enterprise／API 等商業帳號，官方政策是預設**不會**拿你透過 Claude Code 送出的程式碼或對話去訓練模型，除非你自己選擇加入（例如開發夥伴計畫）。實際設定請以 claude.ai 的隱私設定頁為準，本站不代管這類帳號設定教學。
+
+**Claude 把我的檔案改壞了，怎麼救回來？**
+Claude Code 有內建的 checkpoint（檢查點）機制：對話中每送一次訊息就會存一個檢查點，按兩下 `Esc`，或輸入 `/rewind`，會打開還原選單，可以選擇只還原程式碼、只還原對話，或兩者一起還原。但要注意：checkpoint 只追蹤 Claude 用它自己的編輯工具做的修改；如果 Claude 是叫 Bash 執行 `rm`、`mv` 這類指令去動檔案，checkpoint 救不回來，這種情況只能靠 git。所以正式專案還是要維持 git commit 的習慣——checkpoint 是「這次對話內的臨時 undo」，不是版本控制的替代品。
+
+**Claude Code 會不會不問我就自己跑危險指令？**
+預設不會。大多數會改檔案或跑指令的動作都需要你先確認，這套機制詳見[settings 與權限模式](../settings-permissions/)。只有你自己主動切到風險最高的模式（跳過大部分提示）才會不問，一般日常專案不建議開啟。
+
+**我看不懂它跳出的英文技術訊息，怎麼辦？**
+⚠ 未驗證：官方文件本身是英文撰寫，沒有明文保證「Claude 一定能用中文正確解讀所有錯誤訊息」，但實務上可以直接用中文問 Claude 本人「這是什麼意思、我該怎麼辦」，不需要自己先看懂英文原文再操作。
+
+**我完全沒寫過程式，也能用嗎？**
+可以做到一定程度，但不是零門檻的滑鼠工具。你至少需要跑過一次安裝與啟動的指令（見[安裝與啟動](../install/)），之後大部分操作可以用日常語言的中文對話完成，不需要先學會寫程式。但它終究是建立在終端機或 IDE 之上的工具，跟純點滑鼠的 App 還是有差距，本站會誠實標出哪些步驟需要碰終端機。
+
+## 限制與注意
+
+- 這頁不是官方支援管道，也不會取代官方 [Troubleshooting](https://docs.claude.com/en/docs/claude-code/troubleshooting) 文件。如果你遇到的症狀沒有列在這裡，建議先在對話中跑 `/doctor` 做自動檢查，再查官方疑難排解頁。
+- Claude Code 更新頻率很高，這頁的答案以本頁頂端標示的 `base_version` 為準；如果你的版本明顯更新，實際行為可能已經調整，請以官方文件與 in-app 提示為準。
+- 涉及帳號、金流、隱私設定的細節（例如你個人帳號現在的訓練授權開關狀態），本站不會、也不應該幫你確認——那些設定只有你自己登入 claude.ai 才能看到最新狀態。
+
+## 下一步
+
+- [settings 與權限模式](../settings-permissions/)
+- [CLAUDE.md 與記憶](../claude-md-memory/)
+- [安裝與啟動](../install/)
+- [什麼是 Claude Code](../what-is-claude-code/)

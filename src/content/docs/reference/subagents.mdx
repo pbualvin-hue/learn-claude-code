@@ -1,0 +1,74 @@
+---
+title: subagents
+description: 讓 Claude Code 把子任務外包給獨立的「小幫手」處理，主對話只收到結果摘要，不被雜訊塞滿
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/sub-agents
+audience: dev
+last_reviewed: 2026-07-13
+---
+
+想像你請 Claude Code 幫你查一個 bug，過程需要翻十份 log 檔案。如果這十份 log 全部攤開在你眼前的對話裡，你的「桌面」（也就是 Claude 的對話記憶空間，術語叫 context）很快就被雜訊塞滿——真正該討論的重點反而被淹沒。
+
+subagent 就像請一位助理到隔壁房間去翻資料，翻完只帶一句結論回來給你，原始的十份 log 留在助理房間裡，不會佔用你的桌面。這位助理有自己的一套工作方式、只能碰特定的工具，做完事就回報結果，你的主對話畫面乾乾淨淨。
+
+## 進一步了解
+
+用術語講：subagent 是一個獨立跑的 Claude Code agent，有自己的 context window（獨立記憶空間）、自己的 system prompt、可用工具清單與權限設定。當你的請求符合某個 subagent 的 `description`，Claude 就會把任務委派過去，subagent 獨立工作完再把結果回傳給主對話。
+
+**內建 subagent**（不用自己設定，Claude 會視情況自動使用）：
+- `Explore`：唯讀，專門搜尋、理解程式碼庫，不能改檔案
+- `Plan`：plan mode 底下負責先做研究的唯讀 agent
+- `general-purpose`：可讀寫，處理需要探索＋動手改的複雜任務
+
+**自訂 subagent** 是一個 Markdown 檔加上 YAML frontmatter，放在：
+
+| 位置 | 適用範圍 |
+| --- | --- |
+| `.claude/agents/` | 只在這個專案 |
+| `~/.claude/agents/` | 你所有專案都能用 |
+
+最快的做法是直接請 Claude 幫你寫，例如：
+
+```text
+Create a personal code-improver subagent in ~/.claude/agents/ that scans
+files and suggests improvements. Make it read-only and use Sonnet.
+```
+
+產生出來的檔案長這樣：
+
+```markdown
+---
+name: code-improver
+description: Scans files and suggests improvements for readability, performance, and best practices. Use after writing or modifying code.
+tools: Read, Grep, Glob
+model: sonnet
+---
+
+You are a code improvement specialist. For each issue you find, explain
+the problem, show the current code, and provide an improved version.
+```
+
+frontmatter 只有 `name` 跟 `description` 是必填，`tools`（工具白名單）、`model`（跑哪個模型）等都可以省略沿用預設。
+
+**叫用方式**有三種，力道由弱到強：直接在對話裡提到 subagent 名字（Claude 自行判斷要不要用）、用 `@subagent 名字` 明確指定這次一定要用它、或用 `--agent <name>` 讓整個 session 都以這個 subagent 的身分運作。
+
+**何時該用**：
+- 側任務會產生大量你不需要留在主對話的輸出——log、搜尋結果、測試輸出
+- 想限制某個任務能碰的工具，例如做 code review 時只給唯讀權限
+- 想平行調查多個獨立範圍，例如同時研究認證模組、資料庫模組、API 模組，各自在自己的 context 裡工作，最後由 Claude 彙整結果
+
+## 限制與注意
+
+- subagent 從全新、空白的 context 開始，看不到主對話歷史、你已經讀過的檔案。Claude 會寫一段委派訊息交代任務，但如果你有特殊限制（例如「忽略 `vendor/` 目錄」），這類細節不會自動傳過去，需要在委派時重新講一次。
+- 平行跑多個 subagent，完成後結果會一起回到主對話——一次開太多、每個都回傳詳細內容，反而會把主對話塞爆，跟原本想節省 context 的目的相反。
+- subagent 只在單一 session 裡運作。如果你要的是「多個獨立 session 同時跑、集中在一個畫面監控」，那是 background agents 的範疇，見〈[背景任務與排程](../background-tasks-scheduling/)〉，不是這裡講的 subagent。
+- 這是持續演進中的功能（例如背景執行的預設行為在近期版本有調整過），細節可能隨版本變動，實際使用前建議跑 `claude --version` 確認版本、對照官方文件。
+
+## 下一步
+
+- [skills](../skills/)：如果你要的是「可重複使用的方法／流程」而不是一個獨立跑的助理，skill 更合適
+- [背景任務與排程](../background-tasks-scheduling/)
+- [hooks](../hooks/)
+- [MCP 連接器](../mcp/)
+- [settings 與權限模式](../settings-permissions/)

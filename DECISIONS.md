@@ -125,5 +125,11 @@
 3. **允許規則前綴比對**（v3，15:42）：⚠ 未完全驗證——v3 執行兩個 Bash 呼叫後靜默結束無產出，推斷 `curl -s https://...` 不匹配規則 `Bash(curl https://...*)`（前綴比對對旗標敏感）。已補 `-s`／`-sL` 變體規則。另發現：v2/v3 的 notifyOnCompletion 通知均未送達本 session，排程結果不能依賴通知，要主動查。
 **最終判定**：觸發準時（三次皆準）、session 啟動與工具執行已證實；「無人值守全程跑完產出 draft PR」尚未一次成功，末段驗證併入 Phase 3 部署時以修正後允許清單重測（PLAN 原文：第 5 項失敗不擋 Phase 1-2）。對 Phase 3 完成標準的追加要求：部署排程任務後必須實測一次無人值守 run 全通，且 footer 日期停滯（PLAN 既有）之外，加上「排程靜默跳過」的人工檢查點（信任旗標＋允許清單比對）。
 
+## 2026-07-13 Phase 1 執行發現（過程紀錄）
+- **官方文件網域遷移（新發現，影響 Phase 3 管線）**：`docs.claude.com/en/docs/claude-code/*` 全數 301 永久轉址到 `code.claude.com/docs/en/*`（23 條 sources URL 一致，皆最終 200、內容相符）。判定：本 Phase sources 保留 `docs.claude.com` 形式（穩定入口、自動轉址、與 index.mdx 既有慣例一致），不擋驗收；但 Phase 3 更新管線抓 changelog／做連結檢查時需知此遷移，未來可評估 sources 標準化為 `code.claude.com`。changelog 本身仍在 `raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md`（未遷移，Phase 0 第 1 項不受影響）。
+- **frontmatter 必填範圍決策**：content.config.ts 將 base_version/sources/audience/last_reviewed 設為 required 且**不設 optional 逃生口**（首頁 index.mdx 也照填），對齊 CLAUDE.md #4「每頁 frontmatter 必記」與 SPEC #4「決定論優先」——任何缺欄位的頁面直接 build fail，不靠審核記得檢查。屬 SPEC #4 的落實方式，非新決策。
+- **多 agent 產文的連結 slug 風險**：5 個平行 docs-writer agent 各自猜相鄰頁 slug，出現 2 處把 settings-permissions 誤寫成 `../settings/`（死連結）。主對話以「grep 所有 `../xxx/` 目標比對 14 個實際 slug」集中稽核修正。列為已知風險：日後批次產文後，連結 slug 一律集中稽核一次，不依賴各 agent 自猜正確。
+- **slash commands 官方頁現況（供 Phase 3 決策頁複審參考）**：官方 slash-commands 頁內容已朝 skills 傾斜（custom slash command 併入 skills 機制），內建指令另見 `commands` 頁。內容頁已據此撰寫；此為 hooks/skills/agents 重疊關係會隨版本變動的實例，正是決策比較頁（Phase 2）易過時、需列入更新管線強制複審的原因。
+
 ## 翻案紀錄
 （無）

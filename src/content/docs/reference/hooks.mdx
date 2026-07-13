@@ -1,0 +1,90 @@
+---
+title: hooks
+description: 在 Claude Code 特定事件發生時自動執行指令的機制，用來強制做到格式化、通知、記錄等不能只靠 AI「自己想到」的動作。
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/hooks
+  - https://docs.claude.com/en/docs/claude-code/hooks-guide
+audience: dev
+last_reviewed: 2026-07-13
+---
+
+把 Claude Code 想像成一位能幹但偶爾會分心的助理。你可以口頭交代它「每次改完程式記得跑一下格式化」，但它今天心情好會記得，明天忙著解別的問題就可能漏掉——因為它終究是在「判斷」要不要做這件事。
+
+hooks 就是貼在特定關卡上的強制流程：不管 Claude 當下怎麼想，只要事件發生（例如「檔案編輯完成」），貼在那個關卡上的指令就一定會被執行。它不是「建議」，是「規定動作」，讓某些事不必依賴 Claude 每次都主動想起來。
+
+## 進一步了解
+
+**是什麼**：hooks 是設定在 settings 檔案裡的自訂指令，在 Claude Code 生命週期的特定事件發生時自動觸發。最常見的是 shell 指令（`type: "command"`），此外也支援 HTTP endpoint、呼叫 MCP tool、丟給 LLM 判斷是否放行、甚至啟動一個有工具權限的 subagent 來驗證，但日常用最多的仍是 shell 指令。
+
+**常見事件時機**（完整清單見官方文件，這裡列最常用到的）：
+
+- **每個 session 一次**：`SessionStart`（session 開始或恢復時）、`SessionEnd`（session 結束時）
+- **每輪對話一次**：`UserPromptSubmit`（Claude 處理你的訊息之前）、`Stop`（Claude 這輪回應完畢時）
+- **每次工具呼叫**：`PreToolUse`（工具執行前，可以擋下）、`PostToolUse`（工具成功執行後）、`PermissionRequest`（跳出權限對話框時）
+
+**設定在哪裡**：
+
+| 位置 | 適用範圍 | 適合用途 |
+|---|---|---|
+| `~/.claude/settings.json` | 你所有專案，只在你自己機器生效 | 個人習慣，不分享給團隊 |
+| `.claude/settings.json` | 單一專案，可以 commit 進 repo | 團隊共用的強制流程（例如統一 lint） |
+| `.claude/settings.local.json` | 單一專案，Git 會忽略 | 你個人在這個專案的偏好，不進版控 |
+| Plugin 的 `hooks/hooks.json` | 該 plugin 啟用時生效 | 隨 plugin 一起分發的自動化 |
+
+**範例**：擋下危險的 `git push --force`（`PreToolUse` 事件）。
+
+```json title=".claude/settings.json"
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/block-force-push.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+```bash title=".claude/hooks/block-force-push.sh"
+#!/bin/bash
+# 從 stdin 讀進來的 JSON 裡取出 Claude 準備執行的指令
+COMMAND=$(jq -r '.tool_input.command')
+
+if echo "$COMMAND" | grep -q -- '--force'; then
+  jq -n '{
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: "deny",
+      permissionDecisionReason: "偵測到 --force，已自動擋下，請確認後手動執行"
+    }
+  }'
+else
+  exit 0  # 不做任何決定，交回正常流程
+fi
+```
+
+其他典型用途：`PostToolUse` 在編輯成功後自動跑 formatter 或 lint；`Notification` 在 Claude 等待你輸入時發桌面通知；`SessionStart` 在對話一開始就注入目前分支、待辦事項等專案狀態；任何事件都能拿來做審計記錄（把每次觸發的事件寫進 log 檔）。
+
+## 限制與注意
+
+- **不是在沙盒裡跑，是用你自己的權限執行**：hook 腳本能碰到你機器上任何你自己能碰到的檔案、環境變數、憑證。寫一個 hook 之前，先假設它擁有和你本人一樣的權限，而不是「反正是自動化的應該比較安全」。
+- **跟一般工具呼叫不一樣，不會再跳出來問你**：平常 Claude 要執行有風險的 Bash 指令，會跳出權限對話框讓你按允許或拒絕；hook 一旦設好、事件條件符合，就是自動執行、不再徵詢。方便性跟風險是同一件事的兩面。
+- **shell injection 是真實風險**：hook 透過 stdin 收到 Claude Code 傳來的 JSON，裡面可能包含使用者輸入或工具參數的原始文字。如果腳本直接把這些字串拼進 shell 指令（例如沒加引號的變數展開、或用 `eval` 執行組出來的字串），這段文字只要被精心設計過，就可能變成任意指令執行。正確做法：一律用 `jq` 解析 JSON（不要自己土炮字串處理）、變數一律加雙引號（`"$VAR"` 而不是 `$VAR`）、能用參數陣列傳值就不要手動拼接指令字串。
+- **信任來源比想像中重要**：只啟用你自己寫的、或來自你信任的 plugin／專案的 hook。專案層的 `.claude/settings.json` 會跟著 repo 一起被 clone，代表 clone 一個不熟悉的 repo，也可能連帶跑到別人寫好的 hook——這是打開陌生 repo 前該留意的地方，不是只有程式碼本身要看。
+- **設錯會卡住整個流程**：`PreToolUse` 寫錯條件，可能不小心擋下所有工具呼叫，讓 Claude Code 動彈不得；改完 hook 設定，先在小範圍測試再上線到團隊共用的設定檔。
+- 企業／組織層級可以設定 `allowManagedHooksOnly`，強制只允許受管理政策的 hook 執行，擋掉使用者、專案、plugin 層各自定義的 hook——這是給組織管理員用的控管開關，一般個人或小團隊使用不太會碰到。
+
+## 下一步
+
+- [MCP 連接器](../mcp/) — 另一種把 Claude Code 接到外部世界的機制，跟 hooks 常被放在一起比較
+- [settings 與權限](../settings-permissions/) — hooks 要寫進哪個 settings 檔案、跟權限系統怎麼互動
+- [subagents](../subagents/)
+- [skills](../skills/)
+- [常見問題](../faq/)

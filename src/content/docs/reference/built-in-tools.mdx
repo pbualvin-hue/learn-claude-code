@@ -1,0 +1,59 @@
+---
+title: 內建工具
+description: Claude Code 有哪些內建工具、各做什麼，以及為何權限系統會針對工具詢問。
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/tools-reference
+  - https://docs.claude.com/en/docs/claude-code/permissions
+audience: both
+last_reviewed: 2026-07-13
+---
+
+把 Claude Code 想成一位隨身帶著整套工具腰帶的工人：讀檔案有讀檔案的工具、改檔案有改檔案的工具、上網查資料有查資料的工具。
+Claude 自己會判斷該用哪一支，不需要你下指令告訴它「用讀檔案工具」。但有些工具動作比較大（例如刪改你的檔案、跑指令），
+所以在真的動手之前，Claude Code 會先跳出視窗問你「可以嗎？」——這就是權限系統，它管的其實是「哪支工具可以自己做、哪支要先問過你」。
+
+## 進一步了解
+
+### 常見工具
+
+| 工具 | 做什麼 | 預設要不要先問你 |
+| --- | --- | --- |
+| `Read` | 讀取檔案內容（含圖片、PDF、Jupyter notebook） | 工作目錄內不用 |
+| `Grep` | 用 ripgrep 語法搜尋檔案內容 | 不用 |
+| `Glob` | 用檔名 pattern（如 `**/*.ts`）找檔案 | 不用 |
+| `Edit` | 對指定檔案做精確字串取代（不是 regex） | 要 |
+| `Write` | 建立新檔案或整份覆蓋既有檔案 | 要 |
+| `Bash` | 執行 shell 指令 | 要（但 `ls`、`cat`、`git status` 這類唯讀指令不用問） |
+| `WebFetch` | 抓取指定網址內容，用小模型先摘要成 Claude 看得懂的重點 | 要（第一次連到新網域時） |
+| `WebSearch` | 呼叫網頁搜尋，回傳標題與連結 | 要 |
+| `Agent` | 開一個有獨立 context 的 subagent 處理任務 | 不用（但 subagent 內部呼叫工具仍照一般規則被問） |
+
+實際工具清單比這張表長很多（官方 [tools 參考頁](https://docs.claude.com/en/docs/claude-code/tools-reference)列了三十多個，
+還有像 `NotebookEdit`、`LSP`、`Skill`、排程相關工具等），而且會依你用的 provider、平台、設定不同而有增減，
+不要假設每個人畫面上看到的工具都一樣。
+
+### 權限系統怎麼分類工具
+
+官方把工具分三種等級：
+
+1. **唯讀工具**（Read、Grep、Glob 等）：在你目前的工作目錄內不用問，因為不會改變任何東西；讀工作目錄以外的路徑才會跳提示。
+2. **Bash 指令**：預設要問，但有一組內建的唯讀指令（`ls`、`cat`、`pwd`、`git status` 等）不用問，因為它們本來就不會改變系統狀態。
+3. **會改檔案的工具**（Edit、Write 等）：預設要問，一旦你按下「不用再問」，這個決定通常維持到這次對話（session）結束。
+
+`/permissions` 指令可以查看、也可以直接調整這些規則（例如寫死「這個專案不用問 `Bash(npm run test *)`」）。
+
+## 限制與注意
+
+- **WebFetch 不是原始網頁**：它會先用一個小模型依你給的 prompt 摘要內容，Claude 拿到的是摘要後的結果，不是完整原文。如果它說「頁面沒提到 X」，有可能只是你的 prompt 沒問到 X，不代表原始頁面真的沒有——想拿到未加工內容要改用 `curl`（透過 Bash）。
+- **Glob 預設不理會 `.gitignore`，Grep 會**：這是兩者刻意設計成不一樣的地方，用 Glob 找檔案時可能會挖出被 `.gitignore` 排除的檔案。
+- **Edit 要求「先讀過才能改」**：Claude 必須在同一次對話中先用 Read（或特定形式的 Bash 指令如 `cat`）讀過那個檔案，且檔案在讀取後沒有被外部改動，才能對它做 Edit；不滿足條件會直接失敗，不是靜默略過。
+- **工具名稱大小寫要對**：寫權限規則（如 `Bash(npm run build)`）時用的是這裡列出的正式工具名稱，拼錯或大小寫錯不會生效，還可能在啟動時被 Claude Code 標記為警告。
+- **這份清單不含 MCP 工具**：連接外部服務（如 Notion、GitHub）用的是 MCP 伺服器提供的工具，跟這裡講的內建工具是分開的兩層。
+
+## 下一步
+
+- [slash commands 總覽](../slash-commands/)：`/permissions` 這類指令跟工具的關係
+- [settings 與權限模式](../settings-permissions/)：把工具權限規則寫進 `settings.json` 的完整語法
+- [.claude 目錄結構](../claude-directory/)：權限規則實際放在哪個檔案裡
+- [hooks](../hooks/)：想在工具執行前後強制擋下某個動作，比權限規則更精細的做法

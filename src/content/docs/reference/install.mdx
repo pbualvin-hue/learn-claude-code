@@ -1,0 +1,82 @@
+---
+title: 安裝與啟動
+description: 在 Windows／macOS／Linux 安裝 Claude Code 並完成第一次登入對話的步驟。
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/setup
+  - https://docs.claude.com/en/docs/claude-code/quickstart
+audience: beginner
+last_reviewed: 2026-07-13
+---
+
+## 這是什麼
+
+安裝 Claude Code 就像在電腦上裝一個新的 App，只是它裝在「終端機」（一個用打字下指令的黑底視窗，macOS 叫 Terminal，Windows 叫 PowerShell）裡，而不是有圖示可以點的桌面程式。裝好之後，你在任何一個專案資料夾裡打 `claude`，它就會開始跟你對話。
+
+如果不想碰終端機，官方也提供**桌面 App**（下載安裝、登入後直接用視窗操作），這頁以最完整、最多人用的終端機版本為主。
+
+## 進一步了解
+
+### 前置需求
+
+- 一個付費的 Claude 訂閱帳號（Pro / Max / Team / Enterprise）或 Claude Console 帳號——免費版 claude.ai 帳號不能用 Claude Code。
+- 網路連線。
+- 作業系統：macOS 13 以上、Windows 10（1809 以上）、或主流 Linux 發行版（Ubuntu 20.04+ 等）。一般近幾年買的電腦都符合，除非系統從沒更新過。
+
+### 安裝
+
+官方建議用「原生安裝」，指令依作業系統而不同：
+
+**macOS / Linux / WSL**（打開 Terminal）：
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+**Windows（PowerShell）**：
+
+```powershell
+irm https://claude.ai/install.ps1 | iex
+```
+
+判斷自己在哪個視窗：PowerShell 的提示字元開頭是 `PS C:\`，一般命令提示字元（CMD）只有 `C:\`。上面這行指令要在 PowerShell 貼；如果你只有 CMD，官方文件另外提供 CMD 專用指令。
+
+原生安裝會在背景自動更新，不用手動維護版本。Windows 使用者建議額外裝 [Git for Windows](https://git-scm.com/downloads/win)，這樣 Claude Code 能用 Bash 執行指令；不裝的話它會改用 PowerShell 執行指令，行為可能略有差異。
+
+裝完後，安裝腳本會提示你重開一次終端機。輸入以下指令確認安裝成功：
+
+```bash
+claude --version
+```
+
+### 開始第一次對話
+
+在你要操作的專案資料夾裡打開終端機，輸入：
+
+```bash
+cd 你的專案路徑
+claude
+```
+
+第一次執行會跳出瀏覽器要你登入 Claude 帳號，登入完成後就能直接在終端機打字對話了，例如先問：
+
+```text
+這個專案在做什麼？
+```
+
+之後每次要用，只要在同一個專案資料夾打 `claude` 就會回到對話。
+
+## 限制與注意
+
+- **免費帳號無法使用**：如果只有 claude.ai 免費版，安裝完也無法登入使用；需要先升級訂閱或申請 Console 額度。
+- **安裝指令是「下載腳本直接執行」**：`curl | bash`、`irm | iex` 這類寫法本質是下載完馬上跑，只從官方網址（`claude.ai`）執行，不要用來路不明的鏡像連結。
+- **npm 安裝法有版本限制**：也可以用 `npm install -g @anthropic-ai/claude-code` 安裝，但 2.1.198 版之後這個管道要求 Node.js 22 以上；版本太舊安裝時只會印警告、通常仍可跑，但不保證。
+- **不要用 `sudo npm install -g`**：官方明確警告這會造成權限問題與安全風險，遇到權限錯誤應改用其他安裝方式排解，而不是加 `sudo`。
+- Homebrew／WinGet 安裝不會自動更新，需要自己定期執行 `brew upgrade` 或 `winget upgrade`。
+
+## 下一步
+
+- [什麼是 Claude Code](../what-is-claude-code/)——先了解它能做什麼
+- [對話與基本操作](../conversation-basics/)——裝好之後怎麼開始用
+- [CLAUDE.md 與記憶](../claude-md-memory/)——讓它記住你的專案習慣
+- [settings 與權限模式](../settings-permissions/)——調整它能自己做到什麼程度

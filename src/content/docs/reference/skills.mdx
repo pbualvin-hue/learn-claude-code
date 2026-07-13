@@ -1,0 +1,61 @@
+---
+title: skills
+description: 把常常重複貼的指示或流程封裝成 SKILL.md，讓 Claude 需要時才載入，不用每次重打
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/skills
+audience: dev
+last_reviewed: 2026-07-13
+---
+
+如果你發現自己每次跟 Claude Code 對話都要重講一次同樣的話——像是「部署前先跑測試、再 build、再推送」——與其每次打字，不如把它寫成一份貼在牆上的「操作手冊」。需要的時候翻開來看，不需要的時候收起來，不佔對話空間。這份手冊在 Claude Code 裡就叫 skill。
+
+寫好之後，Claude 會在你問到相關問題時自動翻出這份手冊，你也可以直接打 `/手冊名稱` 主動叫出來用。
+
+## 進一步了解
+
+一個 skill 是一個 `SKILL.md` 檔案，放在：
+
+| 位置 | 適用範圍 |
+| --- | --- |
+| `~/.claude/skills/<name>/SKILL.md` | 你所有專案 |
+| `.claude/skills/<name>/SKILL.md` | 這個專案 |
+
+檔案內容分兩塊：YAML frontmatter（告訴 Claude 什麼時候該用）＋ Markdown 指示（Claude 要照著做什麼）。例如一個「摘要目前未 commit 的變更」的 skill：
+
+```yaml
+---
+description: Summarizes uncommitted changes and flags anything risky. Use when the user asks what changed, wants a commit message, or asks to review their diff.
+---
+
+## Instructions
+Summarize the diff above in two or three bullet points, then list any
+risks you notice such as missing error handling or hardcoded values.
+```
+
+**觸發方式**：
+- 自動觸發：Claude 依 `description` 判斷這次對話用不用得上，寫得越具體，判斷越準
+- 手動觸發：直接打 `/<skill 目錄名稱>`（目錄名決定指令名，跟 frontmatter 裡的 `name` 欄位無關）
+
+**控制誰能觸發**（兩個 frontmatter 欄位）：
+- `disable-model-invocation: true`：只有你能用 `/name` 手動叫，Claude 不會自己觸發——適合有副作用的操作，像部署、發訊息，你不會想讓 Claude 自己判斷「時機到了」就動手
+- `user-invocable: false`：只有 Claude 能用，不出現在 `/` 選單——適合背景知識類，例如解釋某個舊系統怎麼運作，這不是一個你會主動「執行」的動作
+
+**參數**：呼叫時帶的文字可用 `$ARGUMENTS` 取得全部，或用 `$0`、`$1` 取單一個參數，例如 `/fix-issue 123` 會把 `123` 代入 `$ARGUMENTS`。
+
+**skill 跟 subagent 的差別**：skill 是「方法」——一段指示，預設在你目前的對話 context 裡直接執行；[subagent](../subagents/) 是「執行者」——一個有自己獨立 context、工具與權限的 agent。可以把 skill 想成說明書，subagent 想成照著說明書做事的人。兩者能合體：skill 加上 `context: fork` 這個 frontmatter 欄位，就是把這份說明書交給一個獨立 subagent 去執行，執行過程不會塞進你的主對話。
+
+## 限制與注意
+
+- `description` 沒寫清楚，Claude 判斷觸發時機的準確度就會差。skill 觸發太頻繁或都不觸發，第一步永遠是先改 `description`，不是先改內容。
+- SKILL.md 一旦被載入，內容會留在對話 context 裡直到這個 session 結束或被壓縮（compact），不是每次都重新讀檔。所以內容要當作「整段對話都持續有效的指示」來寫，不要寫成「只做一次就沒事」的步驟。
+- skill 裡可以用 `` !`command` `` 語法，在 Claude 看到內容之前先跑一段 shell 指令把結果塞進去。這代表共用別人寫的 skill 等於把一段可執行程式碼帶進你的環境——用團隊或社群分享的 skill 前，先確認來源可信。
+- 這不是萬用工具：需要獨立工具限制、獨立權限、或平行處理多個互不相關的任務時，直接用 [subagent](../subagents/) 更合適，不要硬把所有東西塞進一個 skill 裡。
+
+## 下一步
+
+- [subagents](../subagents/)
+- [背景任務與排程](../background-tasks-scheduling/)
+- [hooks](../hooks/)
+- [CLAUDE.md 與記憶](../claude-md-memory/)
+- [slash commands 總覽](../slash-commands/)

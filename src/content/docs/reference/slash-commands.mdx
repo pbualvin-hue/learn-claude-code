@@ -1,0 +1,62 @@
+---
+title: slash commands 總覽
+description: 認識以 / 開頭的內建指令、常用指令一覽，以及自訂指令的基本概念。
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/slash-commands
+  - https://docs.claude.com/en/docs/claude-code/commands
+audience: both
+last_reviewed: 2026-07-13
+---
+
+在 Claude Code 裡打字聊天時，如果你打的第一個字是 `/`，那句話不是在跟 Claude 對話，而是在下一道「捷徑指令」。
+這就像手機撥號打 `*123#` 查餘額、或瀏覽器網址列輸入 `chrome://settings`——不是普通輸入，而是系統認得的固定指令，
+一打出來就會直接執行某個功能，不需要 Claude「理解」你在說什麼。
+
+## 進一步了解
+
+### 常用的內建 slash commands
+
+以下是幾個最常用得到的內建指令（完整清單請查官方 [commands 參考頁](https://docs.claude.com/en/docs/claude-code/commands)，
+它會隨版本增減，不建議背下全部）：
+
+| 指令 | 做什麼 |
+| --- | --- |
+| `/help` | 顯示說明與可用指令清單 |
+| `/clear` | 用空白 context 開新對話（舊對話仍可用 `/resume` 找回），別名 `/reset`、`/new` |
+| `/config` | 開啟設定介面，或用 `key=value` 直接改設定，別名 `/settings` |
+| `/model` | 切換模型，也可以用方向鍵調整 effort 等級 |
+| `/compact` | 摘要目前對話以釋放 context 空間，可加focus指示要保留什麼重點 |
+| `/init` | 掃描專案，產生一份起始的 `CLAUDE.md` |
+| `/permissions` | 管理工具的 allow／ask／deny 權限規則，別名 `/allowed-tools` |
+| `/memory` | 編輯 `CLAUDE.md`、開關 auto memory、查看 auto memory 內容 |
+| `/agents` | 建立與管理 subagent 設定 |
+| `/mcp` | 管理 MCP 伺服器連線與授權 |
+
+指令只有在**訊息一開頭**才會被辨識，打在句子中間的 `/` 只是普通文字。
+
+### 自訂 slash command 的概念
+
+除了內建指令，你也可以自己定義指令。最基本的做法是在專案的 `.claude/commands/` 資料夾（或使用者層級的
+`~/.claude/commands/`）放一個 Markdown 檔，例如 `.claude/commands/deploy.md`，這樣就會多出一個 `/deploy` 指令，
+Claude 收到時會把該檔案的內容當成給它的指示去執行。
+
+官方目前把這套機制併進了更完整的 **skills** 系統：一個技能是 `.claude/skills/<name>/SKILL.md`，效果跟
+`.claude/commands/<name>.md` 一樣會產生 `/name` 指令，但額外支援放附加檔案、控制「誰可以觸發」（你自己打、還是
+Claude 自動判斷要不要用）、傳參數等進階功能。舊的 `.claude/commands/` 檔案目前仍然可以正常運作，不會突然失效。
+
+## 限制與注意
+
+- **本頁清單不是全部**：官方指令清單會隨版本增減（例如 `/agents` 的行為在 v2.1.198 後有調整），本頁只列最常用的幾個，實際可用指令請在 Claude Code 裡打 `/` 查看。
+- **只認開頭**：指令必須是訊息的第一個字元，句子中間打 `/xxx` 不會觸發任何動作。
+- **自訂指令與 skill 同名時 skill 優先**：如果 `.claude/commands/deploy.md` 跟 `.claude/skills/deploy/` 同時存在，Claude Code 會用 skill 那一份。
+- **非互動模式（`-p`）下行為可能不同**：部分指令設計給互動對話用，寫自動化腳本時不能假設所有指令都能用。
+- 這頁不深入 skills 的完整寫法（frontmatter 欄位、參數傳遞等），只講到「跟 slash command 是同一件事的不同層次」這個概念層次。
+
+## 下一步
+
+- [內建工具](../built-in-tools/)：Claude 實際執行動作時用的工具，跟指令是不同層次的東西
+- [.claude 目錄結構](../claude-directory/)：`.claude/commands/`、`.claude/skills/` 實際放在哪裡
+- [settings 與權限模式](../settings-permissions/)：`/permissions`、`/config` 背後對應的設定檔
+- [CLAUDE.md 與記憶](../claude-md-memory/)：`/memory`、`/init` 操作的檔案
+- [hooks](../hooks/)：想在指令執行前後強制做某件事，比 CLAUDE.md 指示更可靠的做法

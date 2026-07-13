@@ -1,0 +1,42 @@
+---
+// Footer 覆寫（SPEC #11 授權與免責 + CLAUDE.md #4 版本落後可視化）。
+// 版本號與更新日一律讀狀態檔（SPEC #7：單一事實來源），排程靜默失敗時 footer 日期停滯可肉眼發現。
+import Default from '@astrojs/starlight/components/Footer.astro';
+import contentState from '../data/content-state.json';
+
+const version = contentState.last_covered_version;
+// 只取日期部分（YYYY-MM-DD）呈現給讀者
+const lastUpdated = contentState.last_run.split('T')[0];
+const year = contentState.last_run.slice(0, 4);
+---
+
+<Default><slot /></Default>
+
+<footer class="site-footer">
+	<p class="site-footer__version">
+		內容基準版本 <strong>v{version}</strong>｜最後更新 {lastUpdated}
+	</p>
+	<p class="site-footer__disclaimer">
+		本站為非官方教學網站，與 Anthropic 無隸屬關係；Claude 為 Anthropic 之商標。
+	</p>
+	<p class="site-footer__copyright">
+		© {year} 本站作者，保留所有權利。
+	</p>
+</footer>
+
+<style>
+	.site-footer {
+		margin-top: 2rem;
+		padding-top: 1rem;
+		border-top: 1px solid var(--sl-color-hairline);
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-3);
+		line-height: 1.6;
+	}
+	.site-footer p {
+		margin: 0.25rem 0;
+	}
+	.site-footer__version strong {
+		color: var(--sl-color-white);
+	}
+</style>

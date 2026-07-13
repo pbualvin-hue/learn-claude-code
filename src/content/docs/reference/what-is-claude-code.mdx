@@ -1,0 +1,48 @@
+---
+title: 什麼是 Claude Code
+description: Claude Code 是能直接讀寫程式碼、跑指令的 AI 工具，跟只能聊天的網頁版 Claude 不一樣。
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/overview
+  - https://docs.claude.com/en/docs/claude-code/setup
+audience: both
+last_reviewed: 2026-07-13
+---
+
+## 這是什麼
+
+想像你請了一位工程師同事坐在你電腦前：你用白話講你要什麼，他會先打開專案看程式碼、告訴你打算怎麼改，改之前跟你確認一下，改完還能幫你跑測試、寫 commit。**Claude Code** 就是這樣的工具——它不只是回答文字，而是真的能讀你的檔案、動手修改、執行指令。
+
+這跟你在瀏覽器打開 [claude.ai](https://claude.ai) 聊天完全不同。網頁版的 Claude 只能對話、給你文字或程式碼片段，你自己複製貼上、自己跑；Claude Code 則是直接坐進你的專案裡，自己去讀檔案、改檔案、跑指令，你只需要用中文（或任何語言）描述目標。
+
+## 進一步了解
+
+官方把 Claude Code 定義為「agentic coding tool」：一個會讀你的程式碼庫、編輯檔案、執行指令，並整合你既有開發工具的工具。它不是單一介面，而是一套引擎，同一份 `CLAUDE.md`、設定、MCP 連接器可以在多個「介面」共用：
+
+- **終端機（Terminal）**：功能最完整，打 `claude` 指令進入對話。
+- **IDE 擴充套件**：VS Code、JetBrains 系列，直接在編輯器裡看修改前後對照（diff）。
+- **桌面 App**：不用開終端機，用視窗操作，也能排程重複性任務。
+- **瀏覽器 / 手機**：不需要本機環境，可以丟長任務在背景跑。
+
+實際能做的事包括：依需求規劃並修改多個檔案、追蹤除錯到根因、操作 git（建 branch、寫 commit、開 PR）、透過 [MCP](../mcp/) 接外部工具（如 Jira、Slack）、用 [CLAUDE.md](../claude-md-memory/) 記住專案規範，以及用 [hooks](../hooks/) 在特定時機自動跑指令。舉例來說，在終端機打：
+
+```bash
+claude "幫我幫 auth 模組寫測試，跑起來，把失敗的修好"
+```
+
+Claude Code 會自己去找相關檔案、寫測試、執行、看結果，中間修改檔案前預設會先跟你確認。
+
+## 限制與注意
+
+- **不是免費功能**：需要付費的 Claude 訂閱（Pro / Max / Team / Enterprise）或 Claude Console 帳號，免費版 claude.ai 帳號不能用 Claude Code。
+- **本質是「動手做事」的工具，不是單純聊天**：它會實際修改你電腦上的檔案、執行系統指令。這帶來效率，也帶來風險——執行前的權限確認機制不是可有可無的裝飾，是重要的安全防線，不要習慣性全部允許。
+- **需要網路連線**：所有運算都在雲端進行，離線無法使用。
+- **不會憑空知道你的意圖**：它會依你的描述行動，描述太模糊容易做錯方向；愈具體的指令，結果愈準。
+- 適合誰：主要設計給會寫程式的開發者處理實際開發任務；完全沒寫過程式的人也能用它做簡單的自動化或文件編修，但建議先從 [安裝與啟動](../install/) 與 [對話與基本操作](../conversation-basics/) 這種低風險任務開始。
+
+## 下一步
+
+- [安裝與啟動](../install/)——把它裝到你電腦上
+- [對話與基本操作](../conversation-basics/)——第一次對話怎麼進行
+- [CLAUDE.md 與記憶](../claude-md-memory/)——讓它記住你的專案習慣
+- [settings 與權限模式](../settings-permissions/)——控制它能自己做到什麼程度
