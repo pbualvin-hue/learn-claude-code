@@ -1,0 +1,70 @@
+---
+// 覆寫 Starlight 的 ThemeSelect：在原本的深/淺色切換旁，加一個「風格」選單。
+// 風格＝乾淨（預設）／潑墨／手繪，選擇存 localStorage（per 裝置，與進度勾選同隱私模式）。
+// 無閃爍：astro.config 的 head inline script 會在渲染前就套用；本元件只負責 UI 與後續切換。
+import Default from '@astrojs/starlight/components/ThemeSelect.astro';
+---
+
+<label class="skin-select" title="選擇網站風格">
+  <span class="sr-only">網站風格</span>
+  <span class="skin-icon" aria-hidden="true">🎨</span>
+  <select id="lcc-skin-select" aria-label="選擇網站風格">
+    <option value="clean">乾淨</option>
+    <option value="inkwash">潑墨</option>
+    <option value="handdrawn">手繪</option>
+    <option value="graffiti">塗鴉</option>
+  </select>
+</label>
+
+<Default>
+  <slot />
+</Default>
+
+<script>
+  const KEY = 'lcc-skin';
+  const sel = document.getElementById('lcc-skin-select');
+  if (sel instanceof HTMLSelectElement) {
+    const root = document.documentElement;
+    const current = root.dataset.skin || localStorage.getItem(KEY) || 'clean';
+    root.dataset.skin = current;
+    sel.value = current;
+    sel.addEventListener('change', () => {
+      root.dataset.skin = sel.value;
+      try {
+        localStorage.setItem(KEY, sel.value);
+      } catch {
+        /* localStorage 不可用（無痕/封鎖）時忽略，僅本次生效 */
+      }
+    });
+  }
+</script>
+
+<style>
+  .skin-select {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-inline-end: 0.5rem;
+  }
+  .skin-icon {
+    font-size: 1rem;
+    line-height: 1;
+  }
+  .skin-select select {
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    background-color: var(--sl-color-bg-nav);
+    color: var(--sl-color-text);
+    padding: 0.35rem 0.5rem;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+</style>

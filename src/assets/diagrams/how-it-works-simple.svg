@@ -1,0 +1,84 @@
+<svg class="hiw" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 600" role="img" aria-labelledby="hiw-title hiw-desc" style="width:100%;height:auto;max-width:560px">
+  <title id="hiw-title">Claude Code 怎麼運作（一句話版）</title>
+  <desc id="hiw-desc">你說出想做的事，Claude 想一下怎麼做，動手前會先問你「可以嗎」，你說可以它才真的動到你的檔案。做壞了還能用 git 復原。</desc>
+  <style>
+    .hiw {
+      --box: #f4f6fa; --stroke: #cbd5e1; --text: #1f2933; --muted: #55616e;
+      --accent: #3d50f5; --accent-soft: #e7eaff; --accent-stroke: #9fabff;
+      --line: #8b97a6; --link: #2b3ce0;
+    }
+    :root[data-theme='dark'] .hiw {
+      --box: #161b22; --stroke: #303845; --text: #e6edf3; --muted: #9aa5b1;
+      --accent: #b7a2ff; --accent-soft: #241d3d; --accent-stroke: #4b3d78;
+      --line: #6b7685; --link: #b7a2ff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme='light']) .hiw {
+        --box: #161b22; --stroke: #303845; --text: #e6edf3; --muted: #9aa5b1;
+        --accent: #b7a2ff; --accent-soft: #241d3d; --accent-stroke: #4b3d78;
+        --line: #6b7685; --link: #b7a2ff;
+      }
+    }
+    .hiw text { font-family: inherit; fill: var(--text); }
+    .hiw .box { fill: var(--box); stroke: var(--stroke); stroke-width: 1.5; }
+    .hiw .keybox { fill: var(--accent-soft); stroke: var(--accent-stroke); stroke-width: 2.5; }
+    .hiw .num { font-size: 22px; font-weight: 800; fill: var(--accent); }
+    .hiw .t { font-size: 22px; font-weight: 700; }
+    .hiw .s { font-size: 16px; fill: var(--muted); }
+    .hiw .flow { fill: none; stroke: var(--line); stroke-width: 2.5; }
+    .hiw .arrowhead { fill: var(--line); }
+    .hiw .lbl { font-size: 15px; fill: var(--muted); }
+    .hiw a { cursor: pointer; }
+    .hiw .clickhint { font-size: 14px; font-weight: 700; fill: var(--link); }
+    .hiw a:hover .keybox { stroke: var(--accent); }
+    .hiw a:hover .notebox { stroke: var(--accent); }
+    .hiw .notebox { fill: var(--box); stroke: var(--stroke); stroke-width: 1.5; stroke-dasharray: 5 4; }
+  </style>
+  <defs>
+    <marker id="hiw-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path class="arrowhead" d="M0,0 L10,5 L0,10 z" />
+    </marker>
+  </defs>
+
+  <!-- ① 你 -->
+  <rect class="box" x="70" y="24" width="480" height="84" rx="14" />
+  <text class="num" x="94" y="62">①</text>
+  <text class="t" x="124" y="60">你說出想做的事</text>
+  <text class="s" x="124" y="88">例如：「幫我把這個資料夾整理好」</text>
+
+  <path class="flow" d="M310,108 L310,140" marker-end="url(#hiw-arrow)" />
+
+  <!-- ② Claude 想 -->
+  <rect class="box" x="70" y="142" width="480" height="84" rx="14" />
+  <text class="num" x="94" y="180">②</text>
+  <text class="t" x="124" y="178">Claude 想一下怎麼做</text>
+  <text class="s" x="124" y="206">先擬個做法，不會悶頭亂做</text>
+
+  <path class="flow" d="M310,226 L310,258" marker-end="url(#hiw-arrow)" />
+
+  <!-- ③ 先問你（可點） -->
+  <a href="trust/permissions-as-insurance/" aria-label="了解權限：它動手前為什麼先問你">
+    <rect class="keybox" x="70" y="260" width="480" height="98" rx="14" />
+    <text class="num" x="94" y="300">③</text>
+    <text class="t" x="124" y="298">🔒 動手前，先問你「可以嗎？」</text>
+    <text class="s" x="124" y="326">你說可以，它才會動——這就是你的保險</text>
+    <text class="clickhint" x="124" y="348">→ 點我看「權限是你的保險」</text>
+  </a>
+
+  <path class="flow" d="M310,358 L310,390" marker-end="url(#hiw-arrow)" />
+  <text class="lbl" x="320" y="378" text-anchor="start">你說可以</text>
+
+  <!-- ④ 動到檔案 -->
+  <rect class="box" x="70" y="392" width="480" height="84" rx="14" />
+  <text class="num" x="94" y="430">④</text>
+  <text class="t" x="124" y="428">才真的動到你的檔案</text>
+  <text class="s" x="124" y="456">在你點頭之前，什麼都不會被改到</text>
+
+  <!-- 做壞了？git（可點） -->
+  <a href="trust/git-as-undo/" aria-label="了解 git：做壞了怎麼復原">
+    <rect class="notebox" x="70" y="510" width="480" height="66" rx="14" />
+    <text class="t" x="94" y="544" style="font-size:18px">🛟 做壞了？</text>
+    <text class="s" x="188" y="542">git 能幫你復原上一步</text>
+    <text class="clickhint" x="188" y="564">→ 點我看「git 是你的後悔藥」</text>
+  </a>
+</svg>

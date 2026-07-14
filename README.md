@@ -1,49 +1,38 @@
-# Starlight Starter Kit: Basics
+# Claude Code 學習手冊
 
-[![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+用繁體中文，把 [Claude Code](https://claude.com/claude-code) 的官方功能講清楚——原創教學、每頁附官方出處、**缺陷優先講**。給進階使用者，也給完全沒寫過程式的親友。
 
-```
-npm create astro@latest -- --template starlight
-```
+🌐 **線上瀏覽**：<https://pbualvin-hue.github.io/learn-claude-code/>
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+> ⚠️ 本站為**非官方**教學網站，與 Anthropic 無隸屬關係；Claude 為 Anthropic 之商標。
+> 內容以每頁標示的 `base_version` 為準，可能與最新版本有落差。
 
-## 🚀 Project Structure
+## 這是什麼
 
-Inside of your Astro + Starlight project, you'll see the following folders and files:
+- **學習路徑**：從安裝到做出第一個小專案，非工程師視角，遇到問題才學功能（做中學）。
+- **安心使用**：資料會去哪、什麼不該給 AI、權限是你的保險、怎麼驗證 AI、git 當後悔藥。
+- **功能參考**：字典式一功能一頁（CLAUDE.md 與記憶、hooks、MCP、skills、subagents…）。
+- 每頁都標注內容依據的 Claude Code 版本與官方文件連結，可追溯。
 
-```
-.
-├── public/
-├── src/
-│   ├── assets/
-│   ├── content/
-│   │   └── docs/
-│   └── content.config.ts
-├── astro.config.mjs
-├── package.json
-└── tsconfig.json
-```
+## 技術棧
 
-Starlight looks for `.md` or `.mdx` files in the `src/content/docs/` directory. Each file is exposed as a route based on its file name.
+- [Astro](https://astro.build) + [Starlight](https://starlight.astro.build)（靜態站，內建搜尋、深／淺色、側欄）
+- GitHub Actions 建置 → GitHub Pages 部署（public repo，$0）
+- 內容全為 Markdown／MDX，與框架解耦（框架可換、內容可攜）
 
-Images can be added to `src/assets/` and embedded in Markdown with a relative link.
+## 本機開發
 
-Static assets, like favicons, can be placed in the `public/` directory.
+所有指令在專案根目錄的終端機執行：
 
-## 🧞 Commands
+| 指令 | 作用 |
+| :--- | :--- |
+| `npm install` | 安裝依賴 |
+| `npm run dev` | 本機開發伺服器 `localhost:4321` |
+| `npm run build` | 建置到 `./dist/` |
+| `npm run preview` | 預覽建置結果 |
+| `node scripts/check-links.mjs` | 內部連結稽核（`build` 後執行）|
 
-All commands are run from the root of the project, from a terminal:
+## 授權
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [Starlight’s docs](https://starlight.astro.build/), read [the Astro documentation](https://docs.astro.build), or jump into the [Astro Discord server](https://astro.build/chat).
+© 2026 本站作者，保留所有權利（All rights reserved）。
+歡迎瀏覽學習；未經同意請勿轉載或改作。

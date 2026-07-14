@@ -9,8 +9,16 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Claude Code 學習手冊',
-			// 可讀性優先：放大字級/行距，對中老年、非工程師受眾友善（見 src/styles/custom.css）
-			customCss: ['./src/styles/custom.css'],
+			// 可讀性優先：放大字級/行距（custom.css）＋風格皮膚（skins.css，data-skin 驅動）
+			customCss: ['./src/styles/custom.css', './src/styles/skins.css'],
+			// 無閃爍：渲染前就從 localStorage 套用使用者選的風格（見 CustomThemeSelect.astro）
+			head: [
+				{
+					tag: 'script',
+					content:
+						"(function(){try{var s=localStorage.getItem('lcc-skin');if(s&&s!=='clean')document.documentElement.setAttribute('data-skin',s);}catch(e){}})();",
+				},
+			],
 			defaultLocale: 'root',
 			locales: {
 				root: { label: '繁體中文', lang: 'zh-TW' },
@@ -21,6 +29,8 @@ export default defineConfig({
 			// Footer 覆寫：版本基準＋免責＋授權（SPEC #7 / #11）
 			components: {
 				Footer: './src/components/Footer.astro',
+				// 在深/淺色切換旁加「風格」選單（潑墨／手繪／乾淨）
+				ThemeSelect: './src/components/CustomThemeSelect.astro',
 			},
 			// SPEC #6 資訊架構。Phase 1 只掛「功能參考」節（其餘節於 Phase 2/3 上線）。
 			// 順序顯式列出，對齊 SPEC #6 參考頁清單（不用 autogenerate，避免字母序打亂閱讀動線）。

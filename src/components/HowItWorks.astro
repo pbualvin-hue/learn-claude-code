@@ -1,0 +1,21 @@
+---
+// 首頁「一句話怎麼運作」簡圖（給最弱使用者的第一印象）。
+// 刻意比 MentalModel 更簡單、字更大、關鍵框可點——2026-07-14 使用者回饋：
+// 原全景圖太密、太小、看不出在講什麼。詳盡全景圖保留 MentalModel 供課程用。
+// inline SVG（非 <img>）才能讓內部 :root[data-theme] 反色、且 <a> 可點跳頁。
+import howItWorksSvg from '../assets/diagrams/how-it-works-simple.svg?raw';
+---
+
+<figure class="how-it-works">
+  <Fragment set:html={howItWorksSvg} />
+</figure>
+
+<style>
+  .how-it-works {
+    margin: 1.5rem auto;
+  }
+  .how-it-works :global(svg) {
+    display: block;
+    margin-inline: auto;
+  }
+</style>

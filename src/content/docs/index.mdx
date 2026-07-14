@@ -1,71 +1,65 @@
 ---
 title: Claude Code 學習手冊
-description: 用繁體中文，把 Claude Code 的官方功能講清楚——原創教學、附官方出處、誠實講缺陷。兩種讀者分流：新手走學習路徑，老手直接查。
+description: 用繁體中文，把 Claude Code 的官方功能講清楚——原創教學、附官方出處、缺陷優先講。新手走學習路徑，老手直接查。
 template: splash
 base_version: '2.1.207'
 sources:
   - https://docs.claude.com/en/docs/claude-code/overview
 audience: both
-last_reviewed: 2026-07-13
+last_reviewed: 2026-07-14
 hero:
-  tagline: 用中文把 Claude Code 講清楚——原創教學、每頁附官方出處、缺陷優先講。
+  tagline: 用中文把 Claude Code 講清楚。沒寫過程式也能學會，缺陷優先講。
   actions:
     - text: 我是新手，帶我從頭開始
-      # hero.actions 不會自動加 base 前綴（SPEC #1 已知坑，Phase 0 實證 404）——需手寫完整路徑
+      # hero.actions 不會自動加 base 前綴（SPEC #1 已知坑）——需手寫完整路徑
       link: /learn-claude-code/learn/getting-started/
       icon: right-arrow
-    - text: 我要查功能（功能參考）
+    - text: 我要查功能
       link: /learn-claude-code/reference/what-is-claude-code/
       icon: open-book
       variant: minimal
 ---
 
-import { Card, CardGrid, LinkButton } from '@astrojs/starlight/components';
-import MentalModel from '../../components/MentalModel.astro';
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import HowItWorks from '../../components/HowItWorks.astro';
 
-這裡是 Claude Code 官方功能的**繁體中文教學**。每一頁都是原創說明（不是翻譯搬運），
-標注內容依據的版本與官方連結，並且**缺陷與限制優先講清楚**——因為那正是你最需要先知道的。
+這裡是 Claude Code 官方功能的**繁體中文教學**。每一頁都是原創說明，標注依據的版本與官方連結，而且**缺陷與限制優先講清楚**——因為那正是你最需要先知道的。
 
-## 🚪 你想怎麼開始？
+## 🚗 Claude Code 是怎麼運作的？
 
-<CardGrid>
-	<Card title="我是新手 — 走學習路徑" icon="rocket">
-		從沒用過、甚至沒開過終端機也沒關係。跟著課程一步步走，用一個小專案邊做邊學。
+一句話：**它動手前，會先問過你。** 從頭到尾，方向盤都握在你手上。
 
-		[**開始學習路徑 →**](/learn-claude-code/learn/getting-started/)
-	</Card>
-	<Card title="我要查東西 — 直接搜尋" icon="magnifier">
-		已經在用、只想查某個功能怎麼運作？用左上角搜尋列（試試 `hooks`、`mcp`、`權限`），
-		或翻[功能參考](/learn-claude-code/reference/what-is-claude-code/)。
-	</Card>
-</CardGrid>
+<HowItWorks />
 
-## 🗺️ 先建立一張全景圖
-
-不管你是哪一種讀者，先看懂這張圖，後面每個功能都會更好懂：**一次對話裡，你的話、Claude、它看得到的東西（context）、工具、權限、記憶、subagent 是怎麼互動的。**
-
-<MentalModel caption="一次對話裡的全景圖——權限閘門是你的保險，Claude 動到真實檔案前會先問你。" />
-
-:::note[看不太懂沒關係]
-這張圖現在只要留個印象就好。學習路徑會在你實際遇到每個部分時，再一個一個講清楚。
+:::tip[這張圖可以點]
+圖裡的 **🔒 權限** 和 **🛟 git** 兩個框可以點進去看細節。其他先留個印象就好，學習路徑會在你真的用到時再一個一個講清楚。
 :::
 
-## ⭐ 常用主題
+## 👣 新手就照這三步走
 
 <CardGrid>
-	<Card title="第一次接觸" icon="rocket">
-		先讀 [什麼是 Claude Code](/learn-claude-code/reference/what-is-claude-code/)
-		與 [安裝與啟動](/learn-claude-code/reference/install/)。
-	</Card>
-	<Card title="固定你的偏好" icon="pencil">
-		用 [CLAUDE.md 與記憶](/learn-claude-code/reference/claude-md-memory/)
-		讓 Claude 記住你的習慣。
-	</Card>
-	<Card title="控制它能做什麼" icon="approve-check">
-		[settings 與權限模式](/learn-claude-code/reference/settings-permissions/)
-		是你的安全保險。
-	</Card>
-	<Card title="安心地用" icon="heart">
-		不確定什麼能給 AI、做壞了怎麼辦？學習路徑裡的「安心使用」章節專門講這些。
-	</Card>
+	<LinkCard
+		title="① 先把它裝起來"
+		href="/learn-claude-code/learn/getting-started/"
+		description="安裝、登入、跟它講到第一句話。沒開過終端機也沒關係。"
+	/>
+	<LinkCard
+		title="② 學會怎麼跟它說"
+		href="/learn-claude-code/learn/how-to-talk-to-claude/"
+		description="說目標、給脈絡、大任務拆小——讓它一次就聽懂你要什麼。"
+	/>
+	<LinkCard
+		title="③ 做你的第一個專案"
+		href="/learn-claude-code/learn/first-project/"
+		description="用一個小專案邊做邊學，遇到問題才學功能，不用先背一堆。"
+	/>
+	<LinkCard
+		title="④ 用得安心"
+		href="/learn-claude-code/trust/where-does-data-go/"
+		description="什麼能給 AI、做壞了怎麼辦、資料會去哪裡——先搞懂再放心用。"
+	/>
 </CardGrid>
+
+## 🔍 只想查某個功能？
+
+已經在用、只想查某個功能怎麼運作？直接翻 [功能參考](/learn-claude-code/reference/what-is-claude-code/)，或用左上角搜尋列（試試 `hooks`、`mcp`、`權限`）。

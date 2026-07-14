@@ -1,0 +1,152 @@
+/* ============================================================
+   風格皮膚（data-skin）：乾淨（預設，無此屬性）／潑墨／手繪
+   原則：只改「氛圍」（色彩、字型、背景質感、邊框），內文一律
+   保持乾淨、大字、高對比；花俏字型掉字型也不崩（有黑體 fallback）。
+   來源：2026-07-14 使用者要求「風格選單讓使用者自選」（超出 SPEC，已記 DECISIONS）。
+   ============================================================ */
+
+/* ------------------------- 潑墨 inkwash ------------------------- */
+:root[data-skin='inkwash'] {
+  --sl-color-bg: #f6f2ea;
+  --sl-color-bg-nav: #f1ebe0;
+  --sl-color-bg-sidebar: #f1ebe0;
+  --sl-color-text: #24221f;
+  --sl-color-white: #1b1a18;          /* 標題色 */
+  --sl-color-accent: #b23a2e;         /* 朱印紅：連結、h2 色條 */
+  --sl-color-accent-low: #ead9d3;
+  --sl-color-accent-high: #7d2016;
+  --sl-color-gray-6: #efe8dc;
+  --sl-color-gray-5: #d9cfbd;
+  --skin-serif: "Kaiti TC", "DFKai-SB", "BiauKai", "標楷體", serif;
+}
+:root[data-theme='dark'][data-skin='inkwash'] {
+  --sl-color-bg: #16140f;
+  --sl-color-bg-nav: #1d1a13;
+  --sl-color-bg-sidebar: #1d1a13;
+  --sl-color-text: #e9e3d6;
+  --sl-color-white: #f3eee2;
+  --sl-color-accent: #e0705f;
+  --sl-color-accent-low: #38211c;
+  --sl-color-accent-high: #f0b3a8;
+  --sl-color-gray-6: #211d16;
+}
+/* 淡墨暈染（固定背景，低透明度不吃可讀性） */
+:root[data-skin='inkwash'] body {
+  background-color: var(--sl-color-bg);
+  background-image:
+    radial-gradient(440px 360px at 96% -8%, rgba(30, 28, 24, 0.16), transparent 70%),
+    radial-gradient(560px 460px at -10% 110%, rgba(30, 28, 24, 0.12), transparent 70%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+:root[data-theme='dark'][data-skin='inkwash'] body {
+  background-image:
+    radial-gradient(440px 360px at 96% -8%, rgba(255, 250, 240, 0.09), transparent 70%),
+    radial-gradient(560px 460px at -10% 110%, rgba(255, 250, 240, 0.06), transparent 70%);
+}
+/* 標題用楷體，帶書法味（中文有字型；Latin 也套） */
+:root[data-skin='inkwash'] .sl-markdown-content :is(h1, h2, h3),
+:root[data-skin='inkwash'] h1.hero-title,
+:root[data-skin='inkwash'] .site-title span {
+  font-family: var(--skin-serif);
+  letter-spacing: 0.03em;
+}
+
+/* ------------------------- 手繪 handdrawn ------------------------- */
+:root[data-skin='handdrawn'] {
+  --sl-color-bg: #fffdf5;
+  --sl-color-bg-nav: #fbf6e9;
+  --sl-color-bg-sidebar: #fbf6e9;
+  --sl-color-text: #2b3140;
+  --sl-color-white: #22314a;
+  --sl-color-accent: #3f6fd1;
+  --sl-color-accent-low: #dbe6fb;
+  --sl-color-accent-high: #244a86;
+  --sl-color-gray-6: #f1eede;
+  --sl-color-gray-5: #d8d2c0;
+  --skin-hand: "Segoe Print", "Ink Free", "Comic Sans MS", "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+:root[data-theme='dark'][data-skin='handdrawn'] {
+  --sl-color-bg: #1c1e22;
+  --sl-color-bg-nav: #23262f;
+  --sl-color-bg-sidebar: #23262f;
+  --sl-color-text: #e6e9f0;
+  --sl-color-white: #eef1f7;
+  --sl-color-accent: #7aa2ff;
+  --sl-color-accent-low: #26304a;
+  --sl-color-accent-high: #b9ccff;
+  --sl-color-gray-6: #24262c;
+}
+/* 方格筆記紙底 */
+:root[data-skin='handdrawn'] body {
+  background-color: var(--sl-color-bg);
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(120, 140, 170, 0.09) 31px 32px),
+    repeating-linear-gradient(90deg, transparent 0 31px, rgba(120, 140, 170, 0.09) 31px 32px);
+  background-attachment: fixed;
+}
+:root[data-theme='dark'][data-skin='handdrawn'] body {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(150, 170, 210, 0.06) 31px 32px),
+    repeating-linear-gradient(90deg, transparent 0 31px, rgba(150, 170, 210, 0.06) 31px 32px);
+}
+/* 標題手寫感（Latin 套手寫字型；中文 fallback 黑體，不崩） */
+:root[data-skin='handdrawn'] .sl-markdown-content :is(h1, h2),
+:root[data-skin='handdrawn'] .site-title span {
+  font-family: var(--skin-hand);
+}
+/* 卡片、連結卡改手繪波浪邊框 */
+:root[data-skin='handdrawn'] .sl-markdown-content :is(.card, .sl-link-card) {
+  border-width: 2.5px;
+  border-style: solid;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+}
+
+/* ------------------------- 塗鴉 graffiti ------------------------- */
+:root[data-skin='graffiti'] {
+  --sl-color-bg: #ecebe8;             /* 水泥灰 */
+  --sl-color-bg-nav: #e3e2de;
+  --sl-color-bg-sidebar: #e3e2de;
+  --sl-color-text: #17171a;
+  --sl-color-white: #111114;          /* 標題／硬框色 */
+  --sl-color-accent: #ff2e88;         /* 螢光粉爆點 */
+  --sl-color-accent-low: #ffd6e6;
+  --sl-color-accent-high: #b3005e;
+  --sl-color-gray-6: #e2e1dd;
+  --sl-color-gray-5: #c6c5c0;
+  --skin-impact: "Impact", "Haettenschweiler", "Arial Narrow Bold", "Microsoft JhengHei", sans-serif;
+}
+:root[data-theme='dark'][data-skin='graffiti'] {
+  --sl-color-bg: #141416;
+  --sl-color-bg-nav: #1b1b1e;
+  --sl-color-bg-sidebar: #1b1b1e;
+  --sl-color-text: #ededed;
+  --sl-color-white: #ffffff;
+  --sl-color-accent: #ff5aa0;
+  --sl-color-accent-low: #3a0f24;
+  --sl-color-accent-high: #ff9ec6;
+  --sl-color-gray-6: #1e1e22;
+}
+/* 噴漆點狀微紋理（不吵到內文） */
+:root[data-skin='graffiti'] body {
+  background-color: var(--sl-color-bg);
+  background-image: radial-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1.4px);
+  background-size: 7px 7px;
+  background-attachment: fixed;
+}
+:root[data-theme='dark'][data-skin='graffiti'] body {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1.4px);
+}
+/* 標題：Impact 粗黑、微斜 */
+:root[data-skin='graffiti'] .sl-markdown-content :is(h1, h2),
+:root[data-skin='graffiti'] .site-title span {
+  font-family: var(--skin-impact);
+  letter-spacing: 0.02em;
+  transform: skewX(-4deg);
+}
+/* 卡片、連結卡：硬邊粗框＋硬陰影（貼紙感） */
+:root[data-skin='graffiti'] .sl-markdown-content :is(.card, .sl-link-card) {
+  border: 3px solid var(--sl-color-white);
+  border-radius: 4px;
+  box-shadow: 5px 5px 0 var(--sl-color-white);
+}
