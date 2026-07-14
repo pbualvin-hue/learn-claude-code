@@ -9,6 +9,10 @@ audience: both
 last_reviewed: 2026-07-13
 ---
 
+:::note[先備知識]
+先看 [什麼是 Claude Code](../what-is-claude-code/)。接外部服務前，建議先讀 [你的資料會去哪裡](../../trust/where-does-data-go/) 了解安全邊界。
+:::
+
 Claude Code 本來只看得到你打字告訴它的內容、還有你電腦裡的檔案。MCP（Model Context Protocol）就像幫它裝上一條條「專線電話」，讓它可以直接打給 GitHub、Notion、公司內部資料庫這些外部服務，自己去查資料、自己去操作，不用你每次都手動複製貼上給它看。
 
 連上一個 MCP 連接器，就是幫 Claude Code 接上一條新的專線；MCP 是公開協定，不是 Anthropic 獨有的東西，任何遵守這個協定的服務都能變成 Claude Code 的連接器（也叫 MCP server）。

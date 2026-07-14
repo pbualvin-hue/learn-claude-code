@@ -1,0 +1,87 @@
+---
+title: 同一件事，該用哪個？
+description: CLAUDE.md、hooks、skills、subagents、權限設定、MCP 這幾個機制常被搞混，這頁用一張表跟一份決策指引，教你什麼情況該用哪個。
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/overview
+  - https://docs.claude.com/en/docs/claude-code/memory
+  - https://docs.claude.com/en/docs/claude-code/hooks-guide
+  - https://docs.claude.com/en/docs/claude-code/skills
+  - https://docs.claude.com/en/docs/claude-code/sub-agents
+  - https://docs.claude.com/en/docs/claude-code/permissions
+  - https://docs.claude.com/en/docs/claude-code/mcp
+audience: both
+last_reviewed: 2026-07-14
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+:::note[先備知識]
+這頁是「融會貫通」用的地圖，把好幾個機制放在一起比較。如果你對其中某一個完全沒概念，建議先挑一頁看過再回來，理解會更順：
+[CLAUDE.md 與記憶](../reference/claude-md-memory/)、[settings 與權限模式](../reference/settings-permissions/)、[hooks](../reference/hooks/)、[skills](../reference/skills/)、[subagents](../reference/subagents/)、[MCP 連接器](../reference/mcp/)。
+
+沒空全看也沒關係，這頁本身就是設計來讓你不用先讀完全部也看得懂。
+:::
+
+## 🤔 為什麼這幾個常常搞混
+
+因為它們做的事聽起來都很像：都是「讓 Claude 更聽話、更能幹」。差別在**切入點不一樣**——
+
+- 有的是「跟 Claude 講道理」（它會盡量照做，但不保證）
+- 有的是「不管 Claude 怎麼想，規定就是規定」
+- 有的是「把一段流程包起來重複用」
+- 有的是「找一個小幫手去做，不佔用你的桌面」
+- 有的是「幫它接上外面的世界」
+
+搞懂這條分線，之後遇到「我該用哪個」的疑問，通常一眼就能判斷。
+
+## 📊 一張表，先有個地圖
+
+| 機制 | 一句話是什麼 | 什麼時候用它 | 誰用得到 | 深入看哪頁 |
+| --- | --- | --- | --- | --- |
+| **CLAUDE.md** | 你寫給 Claude 看的說明書，它會盡量照做 | 想固定一個習慣或規則，不想每次對話都重講一次 | 🟢 非工程師也行 | [CLAUDE.md 與記憶](../reference/claude-md-memory/) |
+| **權限設定** | 決定 Claude Code 能不能自動動手、還是要先問你 | 想控制它能改什麼，重要的事動手前一定要先問 | 🟢 非工程師也行 | [settings 與權限模式](../reference/settings-permissions/) |
+| **hooks** | 特定時機自動跑一段指令，不靠 Claude 自己想到 | 想要「一定會發生」，不是「大概會發生」 | 🔧 開發者向 | [hooks](../reference/hooks/) |
+| **skills** | 把重複用的指示或流程包成一份說明書，需要才叫出來 | 常常對它講一樣的話，想打包起來重複用 | 🔧 開發者向（現成的 skill 非工程師也能直接用） | [skills](../reference/skills/) |
+| **subagents** | 把子任務外包給獨立的小幫手，只帶結論回來給你 | 這個任務要翻很多檔案才能回答，不想塞爆主對話 | 🔧 開發者向 | [subagents](../reference/subagents/) |
+| **MCP** | 幫 Claude Code 接上外部服務（Notion、GitHub、雲端硬碟）的專線 | 想讓它直接讀寫外部工具的資料，不用你複製貼上 | 🟢 非工程師也行（用現成連接器） | [MCP 連接器](../reference/mcp/) |
+
+🟢 / 🔧 的意思：🟢 表示不用寫程式、用現成的就能上手；🔧 表示要自己動手設定或寫東西，比較偏開發者。同一格出現兩者，代表「用現成的」是 🟢，但「自己動手做一個新的」就進了 🔧 的範圍——例如自建 skill、自建 MCP 連接器、自己寫 hook，這些本站歸在開發者軌道，非工程師軌道不強求。
+
+## 🧭 怎麼選：想要 X → 用 Y
+
+還在猶豫的話，照你心裡那句話對照下面選：
+
+<CardGrid>
+	<Card title="想固定偏好、不用每次重講" icon="pencil">
+		寫進 [CLAUDE.md](../reference/claude-md-memory/)。它是「建議」不是「規定」，Claude 會盡量照做，但重要到不能有例外的事，不要只靠它。
+	</Card>
+	<Card title="想「一定會執行」，不靠它自己想起來" icon="setting">
+		用 [hooks](../reference/hooks/)。特定時機一到就自動跑，不管 Claude 那一刻怎麼判斷。
+	</Card>
+	<Card title="想把一串重複流程打包重複用" icon="list-format">
+		包成 [skill](../reference/skills/)。需要時才載入，不佔平常的對話空間。
+	</Card>
+	<Card title="想把要翻很多檔案才能回答的大任務丟出去查" icon="puzzle">
+		交給 [subagent](../reference/subagents/)。它在自己的空間裡做事，只帶結論回來。
+	</Card>
+	<Card title="想控制它能改什麼、動手前先問" icon="comment">
+		設定 [權限規則](../reference/settings-permissions/)。這是唯一「不管 Claude 怎麼想都會被擋下」的機制。
+	</Card>
+	<Card title="想接外部服務的資料" icon="rocket">
+		加一個 [MCP 連接器](../reference/mcp/)。非工程師從 Anthropic 審核過的現成連接器開始就好，不用自己寫。
+	</Card>
+</CardGrid>
+
+## ⚠️ 限制與注意
+
+- **這是「現在這個版本」的地圖，不是永久不變的定義**：這幾個機制彼此的分工，官方也還在持續調整（例如 skill 現在也能指定跑在獨立 subagent 裡，界線本來就有重疊）。改版後如果這頁講的跟你實際看到的對不上，以官方文件為準，這頁只是幫你先建立一個大致方向。
+- **只有權限規則是真正的「保險」**：CLAUDE.md、hooks 裡寫的指示、skill 裡的步驟，全部都要靠 Claude 或工具本身去「執行」；只有權限規則是 Claude Code 這個工具本身在執行層擋下來的關卡，這是它跟其他機制本質上的差別。想知道細節可以看 [權限是你的保險](../trust/permissions-as-insurance/)。
+- **非工程師不需要學會建這些東西，只需要認得它們**：你只要看得懂「這一頁在講哪個機制、跟我有沒有關係」就夠了。自己動手寫 hook、寫 skill、接 MCP 這些，屬於本站的開發者軌道，不是非工程師軌道的必修內容。
+- 這幾個機制不是互斥的，通常是疊在一起用（例如一個 skill 裡面呼叫一個 subagent，一個 hook 檢查完再讓 Claude 繼續）。這頁的表格是拆開來看方便理解，實際用起來常常是組合技。
+
+## 👉 下一步
+
+- 不確定自己現在的狀況該用哪個？看 [情境索引](../scenarios/)，用「我想要⋯」直接找對應做法
+- 卡在某個機制用起來怪怪的？看 [疑難排解](../troubleshooting/)
+- 還沒開始寫自己的規則？從 [打造你自己的 CLAUDE.md](../learn/your-own-claude-md/) 開始，這是六個機制裡入門門檻最低的一個

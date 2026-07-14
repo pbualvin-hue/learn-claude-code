@@ -1,0 +1,60 @@
+---
+title: 我想要…（情境索引）
+description: 不知道功能名稱沒關係，從「你想做什麼」找起——這裡把常見的需求對到該用的功能、該讀的頁。
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/overview
+audience: both
+last_reviewed: 2026-07-14
+---
+
+import { CardGrid, Card } from '@astrojs/starlight/components';
+
+:::note[先備知識]
+不需要先備知識——帶著你想做的事來找就好。
+:::
+
+## 🧭 不知道功能名稱？從「你想做什麼」找起
+
+Claude Code 的功能名稱一大堆：CLAUDE.md、skills、hooks、MCP、subagents……第一次聽到很正常，不用死背。
+
+這一頁反過來做：你先想「我想做的事」，這裡幫你對到該用的功能、該讀的那一頁。找不到功能名稱沒關係，往下滑找你的情境就好。
+
+## 🔍 我想要……
+
+<CardGrid>
+	<Card title="記住我的偏好，不用每次重講" icon="pencil">
+		寫一份 CLAUDE.md，把你的習慣與規則交代給 Claude，之後每次對話它都會照著做。看 [自己的 CLAUDE.md](../learn/your-own-claude-md/)。
+	</Card>
+	<Card title="做出我的第一個小專案" icon="rocket">
+		跟著一個範本專案邊做邊學，遇到問題才學功能，不用先背完一輪術語。看 [第一個專案：邊做邊學](../learn/first-project/)。
+	</Card>
+	<Card title="把一串重複流程打包起來重複用" icon="puzzle">
+		常常對 Claude 重講同一套步驟？寫成一份 skill，需要時它自己翻出來用。看 [skills](../reference/skills/)。
+	</Card>
+	<Card title="在某個時機「一定會自動執行」某件事" icon="setting">
+		不想每次手動確認、想要條件符合就自動觸發，這是 hooks 的工作。看 [hooks](../reference/hooks/)。
+	</Card>
+	<Card title="接外部服務的資料（Notion、雲端等）" icon="comment">
+		讓 Claude 讀到、寫進你平常在用的外部服務，靠的是 MCP。看 [MCP](../reference/mcp/)。
+	</Card>
+	<Card title="控制它能改什麼、動手前先問我" icon="approve-check">
+		Claude 動手前預設會先跳出來問你，這道關卡怎麼運作、怎麼安心判斷，看 [權限是你的保險](../trust/permissions-as-insurance/)。
+	</Card>
+	<Card title="不確定什麼東西能給 AI 看" icon="warning">
+		密碼、個資、公司機密該不該讓 Claude 碰？先看這份清單再決定。看 [不該分享的東西](../trust/what-not-to-share/)。
+	</Card>
+	<Card title="做壞了，想復原" icon="list-format">
+		Claude 改壞檔案不用慌，git 幫你留了回頭路。看 [git 是你的復原鍵](../trust/git-as-undo/)。
+	</Card>
+	<Card title="想把「要翻很多檔案」的問題丟出去查" icon="magnifier">
+		大範圍搜尋、跨檔案調查這種耗 context 的工作，可以交給獨立的 subagent 去查，查完只回來一份摘要。看 [subagents](../reference/subagents/)。
+	</Card>
+	<Card title="只想查某個功能怎麼用" icon="document">
+		已經在用、只是想查某個功能的細節，直接翻功能參考就好。看 [功能參考總覽](../reference/what-is-claude-code/)。
+	</Card>
+</CardGrid>
+
+## 👉 下一步
+
+沒找到想要的？看[疑難排解](../troubleshooting/)或[功能參考](../reference/what-is-claude-code/)。

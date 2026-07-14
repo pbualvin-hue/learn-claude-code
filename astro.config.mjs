@@ -82,6 +82,20 @@ export default defineConfig({
 						{ label: '常見問題 FAQ', slug: 'reference/faq' },
 					],
 				},
+				{
+					label: '比較與情境',
+					items: [
+						{ label: '同一件事，該用哪個？', slug: 'compare' },
+						{ label: '我想要…（情境索引）', slug: 'scenarios' },
+						{ label: '疑難排解：卡住了看這裡', slug: 'troubleshooting' },
+					],
+				},
+				{
+					label: '詞彙表',
+					items: [
+						{ label: '看不懂的字查這裡', slug: 'glossary' },
+					],
+				},
 			],
 		}),
 	],

@@ -1,0 +1,107 @@
+---
+title: 詞彙表：看到看不懂的字查這裡
+description: 站上常出現的術語，用一句大白話解釋，不用先懂技術背景。
+base_version: '2.1.207'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/overview
+  - https://docs.claude.com/en/docs/claude-code/memory
+  - https://docs.claude.com/en/docs/claude-code/hooks
+  - https://docs.claude.com/en/docs/claude-code/mcp
+  - https://docs.claude.com/en/docs/claude-code/skills
+  - https://docs.claude.com/en/docs/claude-code/sub-agents
+  - https://docs.claude.com/en/docs/claude-code/permissions
+audience: beginner
+last_reviewed: 2026-07-14
+---
+
+## 🧭 先備知識
+
+不用先備知識，看到不懂的字，直接來這頁查就好。如果你才剛要開始接觸 Claude Code，也可以先看
+[新手第一步](../learn/getting-started/)。
+
+## 🔤 最常撞到的詞
+
+### 終端機（Terminal）
+
+一個只有文字、沒有圖示按鈕的視窗，你打字、它回文字。Claude Code 主要就是在這裡面跟你對話。黑底白字看起來很駭客，但你其實只是在打字聊天，跟傳訊息差不多。
+
+### CLI（命令列）
+
+CLI 全名 Command Line Interface（命令列介面），泛指「用打字下指令」這種操作方式，跟平常點滑鼠按按鈕相對。Claude Code 就是一套 CLI 工具：打字告訴它要做什麼，而不是點畫面上的按鈕。
+
+### Claude Code
+
+會真的幫你讀檔案、改檔案、跑指令的 AI 工具，跟只能聊天的網頁版 Claude（claude.ai）不一樣。深入看：[什麼是 Claude Code](../reference/what-is-claude-code/)
+
+### CLAUDE.md
+
+一張你寫給 Claude 的「家規紙條」，把你的習慣和規則寫下來，Claude 每次開始工作前會先看一眼，不用你每次重講一次。深入看：[CLAUDE.md 與記憶](../reference/claude-md-memory/)
+
+### context（上下文）
+
+Claude 這次對話「記得」的所有內容——你打的字、它讀過的檔案、之前聊過的東西。可以想成一張桌子的桌面，東西越堆越多桌面越滿；桌面滿了，Claude 抓重點的能力會變差。
+
+### token
+
+Claude 讀懂文字時切成的小片段，大略可以想成「半個字到一個字」的計量單位。你不太需要自己去算，只要知道：東西塞太多，桌面（context）會比較快滿。
+
+### prompt（提示 / 你打的指示）
+
+你打給 Claude 的那句話或那段指示。講得越具體，Claude 越容易做對——「幫我把這個資料夾裡的照片按日期分類」比「幫我弄一下這個資料夾」更容易讓它抓到你要什麼。
+
+### Markdown / MDX
+
+一種簡單的純文字排版格式，用 `#` 當標題、用 `-` 當條列，不用滑鼠設定字型粗細。這個網站的每一頁內容，包括你現在看的這篇詞彙表，都是用這種格式寫的。MDX 是進階版，可以在裡面多放一些網站專用的排版元件。
+
+### commit / git
+
+git 是幫你的專案「存檔」的工具，每存一次檔就是一個 commit，可以想成遊戲的存檔點——東西改壞了，隨時能回到某個存檔點重來。
+
+### repo（儲存庫）
+
+repository 的簡稱，就是一個專案的完整資料夾，裡面裝著所有檔案，加上 git 幫你記住的每一次存檔歷史。
+
+## 🧠 進階一點的詞
+
+### LLM（大型語言模型）
+
+Large Language Model 的縮寫，Claude 背後的那顆「大腦」。它讀過大量文字，很會「接下一句話該講什麼」，但它不是在查字典或資料庫核對事實——這也是為什麼它有時會講得很篤定卻是錯的（見下面「幻覺」）。
+
+### 幻覺（hallucination）
+
+AI 很有自信地講出一件根本不存在的事，例如很篤定地說你的專案裡有某個函式，但其實沒有。這不是它「壞掉」了，是它本來的運作方式（預測合理的下一句話，不是查證事實）造成的結果。深入看：[AI 會犯錯——怎麼驗證它的產出](../trust/verify-ai-output/)
+
+### hooks
+
+一種「不管 Claude 想不想做，事件發生就一定會執行」的強制機制。跟 CLAUDE.md 不一樣：CLAUDE.md 是建議，Claude 有可能忘記照做；hooks 是規定動作，條件符合就一定會跑。深入看：[hooks](../reference/hooks/)
+
+### MCP（連接器）
+
+Model Context Protocol 的縮寫，讓 Claude Code 接上 GitHub、Notion 這類外部服務的「專線電話」，不用你手動複製貼上資料給它看。深入看：[MCP 連接器](../reference/mcp/)
+
+### skill
+
+一份寫好的「操作手冊」，把常常要重講的指示存起來，需要時 Claude 自動翻出來用，你也可以打 `/名稱` 主動叫出來。深入看：[skills](../reference/skills/)
+
+### subagent（子代理 / 幫手）
+
+Claude 找來的「隔壁房間的助理」，去處理一個獨立的子任務（例如翻十份 log 檔），做完只帶結論回來，不會把過程雜訊塞進你正在看的對話。深入看：[subagents](../reference/subagents/)
+
+### 權限模式
+
+你設定「哪些事 Claude 可以自己做、哪些事一定要先問你」的規則。例如刪檔案、跑有風險的指令，預設都會先跳出來問你一聲，等你按允許才會執行。深入看：[settings 與權限模式](../reference/settings-permissions/)
+
+### prompt injection（提示注入）
+
+一種風險：外部資料（例如某個網頁、某個 MCP 連接器回傳的內容）裡藏了一段看起來像指令的文字，想騙 Claude 去執行。因應方式包括敏感操作維持人工確認、不要對外部內容照單全收。深入看：[MCP 連接器](../reference/mcp/)的「限制與注意」
+
+### base_version
+
+這個網站每一頁 frontmatter 裡都有的欄位，標記這篇教學是依據 Claude Code 哪個版本寫的。Claude Code 更新很快，功能可能會變，看到 base_version 就知道這篇內容是「當時」對的，不一定是「現在」最新的行為。
+
+## ➡️ 下一步
+
+- [什麼是 Claude Code](../reference/what-is-claude-code/)——如果你連這個工具本身在做什麼都還不確定，從這頁開始
+- [新手第一步](../learn/getting-started/)——照著步驟安裝、講第一句話
+- [內建工具](../reference/built-in-tools/)——想知道 Claude 實際上有哪些「手」可以動
+- [settings 與權限模式](../reference/settings-permissions/)——搞懂哪些事會先問你、哪些不會
