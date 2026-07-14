@@ -89,6 +89,23 @@ C. 驗收：PLAN Phase 1 完成標準逐項附證據＋merge 前黃金抽查
 - 心智模型圖在深色／淺色／手機三種情境皆可讀
 - 每個情境條目點進去能落在正確參考頁
 
+### Phase 2 完成判定（2026-07-14 執行）— ✓ 內容完成並上線（真人親友驗收待使用者安排）
+- 站上線 33 頁（含 404），連結稽核零死鏈（`scripts/check-links.mjs`，無白名單全通）。實作項全數落地：
+  - 首頁雙入口分流＋「一句話怎麼運作」簡圖（可點 🔒 權限/🛟 git）＋新手三步 LinkCard（原密集全景圖因對新手資訊爆炸而下架，改簡圖；詳盡 MentalModel 保留為元件）。
+  - 開始使用：getting-started（含手繪終端機示意圖）／how-to-talk-to-claude／your-own-claude-md（三行起步＋雙讀者）／anthropic-academy（原創導覽＋涵蓋度對應表，5 課驗證免費、其餘標未驗證）。
+  - 第一個專案軌道：index＋track-a（整理資料夾）＋track-b（文件摘要，硬閘門先過 trust）＋next-step-map；practice-folder.zip／sample-docs.zip 自產素材。
+  - 安心使用 trust 5 頁（資安必抽全複核：訓練預設值經使用者裁決收斂為不斷言、導自查）。
+  - 比較與情境：compare 決策比較頁／scenarios 情境 10／troubleshooting 症狀 10；glossary 詞彙 19。
+  - reference 14 頁補齊「先備知識」。
+- 完成標準自驗（真人驗收除外）：無死路＝31 內容頁全數同具先備知識＋下一步；誠實教學＝14/14 功能頁有「限制與注意」、trust 全複核；決策頁走查 3 需求皆落正確功能；心智模型/風格深淺色手機三情境已驗；情境/連結點進落正確頁（連結稽核背書）。
+- 可讀性迭代（使用者回饋）：字型堆疊補中文黑體（修「字大仍難讀」根因）、放大字級、口語化語氣、Steps/CardGrid/emoji 視覺。
+- 超出原 SPEC 的使用者主導新增：**風格切換器**（乾淨/潑墨/手繪/塗鴉，data-skin＋localStorage per 裝置，覆寫 ThemeSelect）、首頁改版、正式 README。維護成本攤牌與落實見 DECISIONS 2026-07-14；SPEC/PLAN 正式收錄見下「Phase 2 追加（回填）」。
+- 待辦（不擋 Phase 2 內容驗收）：真人親友照入門篇實走＋寫出 3 條規則＋走完範本專案（PLAN 完成標準，使用者安排）；詳盡 MentalModel 全景圖可於日後放進某課「想看完整全貌」處（選配）。
+
+### Phase 2 追加（回填，2026-07-14）— 風格切換器
+- 使用者要求「做個選風格按鈕讓使用者自選」。收「乾淨（預設）＋潑墨＋手繪＋塗鴉」四種皮膚，`data-skin` 屬性驅動（`src/styles/skins.css`），選擇存 localStorage（per 裝置，對齊「不做帳號系統」），覆寫 Starlight `ThemeSelect` 加「🎨 風格」選單、`head` inline script 防閃爍。內文所有皮膚下維持乾淨大字高對比，花俏字型有黑體 fallback。
+- 維護成本知情接受：每皮膚 ×深/淺色×手機需維持可讀，屬個人化/delight（性質近 Phase 4，使用者要求提前）。停損閘門若觸發（親友使用不足），此功能列可砍範圍。
+
 ## Phase 3 — 版本追蹤＋自動草稿管線
 實作項：
 - updates/ 區與版面（一版一頁：變更解讀＋受影響的參考頁清單）
