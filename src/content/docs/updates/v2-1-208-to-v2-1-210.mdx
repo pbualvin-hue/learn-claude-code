@@ -1,0 +1,73 @@
+---
+title: 'v2.1.208 → v2.1.210 更新解讀'
+description: 這三版多為背景任務穩定性修正，但有一則權限規則新警告、一則 skill 參數修正、一則 subagent 隔離資安修正值得留意。
+base_version: '2.1.210'
+sources:
+  - https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md
+  - https://docs.claude.com/en/docs/claude-code/permissions
+  - https://docs.claude.com/en/docs/claude-code/skills
+  - https://docs.claude.com/en/docs/claude-code/sub-agents
+audience: both
+last_reviewed: 2026-07-15
+---
+
+:::note[先備知識]
+建議先看過[本區在做什麼](../)，了解這裡的解讀規則。想直接查某個機制的完整說明，可以先跳到[功能參考](../../reference/what-is-claude-code/)。
+:::
+
+## 🔄 這批更新有沒有感
+
+v2.1.208 到 v2.1.210 這三版，大部分條目是背景任務（`claude agents`）、SDK、Bedrock 等邊角案例的穩定性修正，日常互動使用感受不大。但有三件事值得留意：一是**權限規則寫法**多了一則新警告，二是 **skill／指令參數**不會再被靜默吃掉，三是 **subagent 的 worktree 隔離**修了一個會讓隔離失效的資安 bug。有自己寫過 `settings.json` 權限規則或 skill 的人，建議看完這頁。
+
+## 📋 逐版解讀
+
+### v2.1.208
+
+**日常使用有感**
+
+- 新增**螢幕閱讀器模式**：執行 `claude --ax-screen-reader`、設定環境變數 `CLAUDE_AX_SCREEN_READER=1`，或在 `settings.json` 加 `"axScreenReader": true`，畫面會改用純文字方式呈現，給螢幕閱讀器使用者用。
+- 新增 `vimInsertModeRemaps` 設定：vim 模式下可以把兩鍵序列（例如連按兩下 `j`）對應成 Escape，不用去按實體 Esc 鍵。
+- 一大批**背景任務（background agents）穩定性修正**：斷線後無法重連、context window 用量顯示錯誤地跳回 100%、記憶體洩漏等。如果你有在用 `claude agents` 讓任務在背景跑，這批修正會讓體驗明顯更穩，但操作方式沒有變。
+- `/release-notes` 點「顯示全部」以前會把整份英文 changelog 塞進對話 context，這版修正後不會了——省 token，不影響你怎麼用這個指令。
+
+**細節修正（可略過）**
+
+- 大量 SDK／headless／Bedrock／Windows 平台的邊角案例修正（stream-json 卡死、HTTP/2 斷線、AWS SSO 憑證等），一般互動式使用不會碰到。
+- 效能面：多處記憶體洩漏修正、大型 session 恢復速度優化、高工具數場景下每輪處理加速。
+
+### v2.1.209
+
+單一 regression 修正：`/model` 等對話框在背景 session（`claude agents`）裡被上一版的防護規則誤擋住，這版修回來。純內部修正，沒有新行為要學，可略過。
+
+### v2.1.210
+
+**日常使用有感**
+
+- ⚠️ **權限規則新警告**：如果你在 `settings.json` 的 `permissions` 裡寫過 `Write(path)`、`NotebookEdit(path)` 或 `Glob(path)` 這種寫法，啟動時會跳出警告——這幾個工具的權限比對方式跟 `Edit`／`Read` 不同，官方建議改寫成 `Edit(path)` 或 `Read(path)`。本站範例目前沒有用到這幾種寫法，但如果你自己寫過權限規則，值得檢查一次。
+- **skill／指令參數不會再被靜默吃掉**：以前呼叫 skill 或 slash command 時，如果帶的參數比 `$1`、`$2` 這類位置變數多或對不上，Claude Code 會直接把多的部分刪掉；這版修正後會原樣保留，不會憑空消失。
+- **subagent 的 worktree 隔離修了一個資安相關 bug**：設定 `isolation: 'worktree'` 的 subagent，原本可能繞過隔離、直接對主 repo 跑會修改內容的 git 指令；修正後才真正符合「subagent 在自己的空間做事，不動到你的主目錄」這個設計初衷。同一版也加強了 Agent tool 對間接提示注入的防範（subagent 讀到的檔案內容裡如果藏了指令，不會被誤當成真正的指示執行）。
+- 無人值守（unattended）session 的一個卡住成因被修掉：hook 逾時之前會被誤判成「使用者拒絕」，導致排程或背景 session 停住等一個不會來的回覆；這版修正後逾時會正確回報成逾時。
+
+**細節修正（可略過）**
+
+- 一長串背景任務／agent 面板 UI 細節修正（游標行為、圖示殘留、任務進度計數、暫存畫面殘留等）。
+- auto mode 的權限分類器行為調整：外部（第三方整合）session 現在預設用 Sonnet 5 判斷權限。
+- `ultracode` 關鍵字誤觸發修正：以前 webhook 或 PR 留言等非人類直接輸入的內容裡如果剛好出現這個字，會被誤判成使用者主動啟用；這版修正後只有人類真的輸入才會觸發。
+
+## 📌 受影響的本站頁面
+
+| 頁面 | 受影響條目 | 建議修改 |
+| --- | --- | --- |
+| [settings 與權限模式](../../reference/settings-permissions/) | Write(path)／NotebookEdit(path)／Glob(path) 權限規則新警告（2.1.210） | 頁面目前沒有這幾種寫法的範例，不需訂正；可考慮日後補一句提醒，教讀者寫權限規則時直接用 Edit(path)/Read(path)，避開這個警告 |
+| [skills](../../reference/skills/) | `$1`／`$2` 位置參數不再被靜默吃掉（2.1.210） | 頁面第 48 行講解 `$ARGUMENTS`／`$0`／`$1` 語法本身沒有錯，可選擇性補一句：帶多餘或對不上的參數現在會原樣保留，不會被刪掉 |
+| [subagents](../../reference/subagents/) | worktree 隔離資安修正＋Agent tool 防注入強化（2.1.210） | 頁面目前沒有提到 worktree 隔離保證，不算內容錯誤；資安相關條目，人工複核時建議確認是否要補一段「subagent 在隔離環境跑，不會動到你的主目錄」的說明 |
+
+## ⚠️ 未驗證
+
+無。這批更新的行為描述都能在官方 changelog 逐條對到，沒有需要靠推測補完的部分。
+
+## 👉 下一步
+
+- [同一件事，該用哪個？](../../compare/)：想重新確認 hooks／skills／subagents／權限規則怎麼分工
+- [settings 與權限模式](../../reference/settings-permissions/)：完整權限規則語法
+- [疑難排解](../../troubleshooting/)：更新後行為跟預期不一樣？先看這裡
