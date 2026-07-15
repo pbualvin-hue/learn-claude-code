@@ -123,3 +123,37 @@ starlight-toc > nav > p {
   font-weight: 600;
   cursor: pointer;
 }
+
+/* 列印樣式（cheatsheet 速查表為主）：只印內文，黑字白底省墨 */
+@media print {
+  header.header,
+  nav.sidebar,
+  .right-sidebar-container,
+  .pagination-links,
+  footer.sl-flex,
+  .mobile-preferences,
+  starlight-menu-button {
+    display: none !important;
+  }
+  .main-frame {
+    padding-top: 0 !important;
+    padding-inline-start: 0 !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+  body {
+    font-size: 12pt;
+    color: #000 !important;
+    background: #fff !important;
+  }
+  .sl-markdown-content table {
+    font-size: 10.5pt;
+    page-break-inside: avoid;
+  }
+  .sl-markdown-content :not(pre) > code {
+    background: none;
+    color: #000;
+    border: 1px solid #999;
+  }
+}

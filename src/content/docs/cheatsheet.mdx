@@ -1,0 +1,98 @@
+---
+title: 單頁指令速查表
+description: 常用 slash commands、鍵盤快捷鍵與 CLI 啟動旗標，收在一頁裡，學完課程之後拿來查、拿來印。
+base_version: '2.1.210'
+sources:
+  - https://docs.claude.com/en/docs/claude-code/cli-reference
+  - https://docs.claude.com/en/docs/claude-code/interactive-mode
+  - https://code.claude.com/docs/en/commands
+audience: both
+last_reviewed: 2026-07-15
+---
+
+:::note[先備知識]
+零基礎也能直接查這頁，但建議先走過學習路徑第一站 [開始上手](../learn/getting-started/)，
+知道 Claude Code 基本怎麼操作，查表時才看得懂每一列在講什麼。
+:::
+
+這頁是全站唯一「不是拿來讀，是拿來查」的頁面。把常用的 slash commands、對話中的鍵盤操作、
+CLI 啟動旗標全部收進三張表，等你走完學習路徑、開始每天用 Claude Code 之後，忘記某個指令怎麼打，
+回來這頁找就好。內容全是純文字表格，用瀏覽器的列印功能（Windows：`Ctrl+P`；macOS：`Cmd+P`）
+印出來貼在螢幕旁邊也沒問題，不會缺格式、缺顏色。
+
+## 常用 slash commands
+
+訊息**開頭**打 `/` 才會觸發，句子中間打 `/` 只是普通文字。
+
+| 指令 | 做什麼 | 備註 |
+| --- | --- | --- |
+| `/help` | 顯示說明與可用指令清單 | |
+| `/clear` | 用空白 context 開新對話 | 別名 `/reset`、`/new` |
+| `/compact` | 摘要目前對話以釋放 context 空間 | 可加 instructions 指定要保留的重點 |
+| `/rewind` | 把程式碼與對話回捲到某個 checkpoint | 雙按 `Esc` 也能開這個選單 |
+| `/login` | 登入 Anthropic 帳號 | |
+| `/logout` | 登出 Anthropic 帳號 | |
+| `/model` | 切換模型並存成預設 | |
+| `/config` | 開啟設定介面，或用 `key=value` 直接改設定 | |
+| `/permissions` | 管理工具的 allow／ask／deny 權限規則 | |
+| `/init` | 掃描專案，產生一份起始 `CLAUDE.md` | |
+| `/memory` | 編輯 `CLAUDE.md`、管理 auto memory | |
+| `/mcp` | 管理 MCP 伺服器連線與授權 | 可加 `reconnect`／`enable`／`disable` |
+| `/agents` | 建立與管理 subagent 設定 | |
+| `/usage` | 查看目前的用量／額度資訊 | 別名 `/cost`；顯示內容依方案（訂閱或 API）而異 |
+| `/doctor` | 執行健檢，診斷並嘗試修正設定問題 | |
+| `/resume` | 回到之前的某段對話 | |
+| `/status` | 顯示目前 session 狀態 | |
+| `/context` | 用色塊視覺化目前 context 用量 | |
+| `/tasks` | 列出目前 session 背景執行中的工作（shell、subagent） | |
+
+## 對話中的鍵盤操作
+
+| 按鍵 | 做什麼 | 備註 |
+| --- | --- | --- |
+| `Esc` | 中斷 Claude 目前的回應，或關掉對話框 | 對話框開著時 `Esc` 是關對話框，不是中斷 Claude |
+| `Esc` `Esc`（連按兩下） | 輸入框有字：清空並存進歷史（`↑` 可找回）；輸入框空白：打開 rewind 選單 | |
+| `Shift+Tab` | 循環切換權限模式（`default`／`acceptEdits`／`plan`⋯） | |
+| `Ctrl+C` | 中斷執行中的操作；沒在跑東西時第一下清空輸入，第二下才離開 | |
+| `Ctrl+D` | 離開 Claude Code session | EOF 訊號 |
+| `Ctrl+O` | 切換 transcript 檢視，看詳細工具呼叫紀錄 | |
+| `Ctrl+R` | 反向搜尋指令歷史 | |
+| `Ctrl+L` | 重繪畫面 | 畫面跑掉、局部空白時救援用 |
+| `Ctrl+B` | 把正在跑的 Bash 指令或 agent 移到背景執行 | tmux 使用者要連按兩下 |
+| `Ctrl+T` | 顯示／隱藏 Claude 的任務清單（to-do checklist） | 跟背景工作列表 `/tasks` 是不同東西 |
+| `!` 開頭 | 進入 shell 模式，直接下指令，不經 Claude 判斷 | |
+| `@` | 觸發檔案路徑自動完成 | |
+| `\` + `Enter` 或 `Ctrl+J` | 換行但不送出（多行輸入） | 任何終端機都能用，不用另外設定 |
+
+## 常用 CLI 啟動旗標
+
+在終端機（不是在 Claude Code 對話裡）輸入。
+
+| 指令 | 做什麼 | 備註 |
+| --- | --- | --- |
+| `claude` | 啟動互動式 session | |
+| `claude "問題"` | 啟動互動式 session，並帶入第一句話 | |
+| `claude -p "問題"` | 一次問答式模式，回答完就結束，不進互動畫面 | 適合寫腳本、串接其他工具 |
+| `claude -c` | 接續目前目錄下最近一次對話 | 等同 `--continue` |
+| `claude -c -p "問題"` | 接續對話，並用一次問答式模式回答完就結束 | |
+| `claude -r "<session>" "問題"` | 用 ID 或名稱恢復指定 session | 等同 `--resume` |
+| `claude --model <name>` | 指定這次 session 要用的模型 | |
+| `claude --permission-mode <mode>` | 指定啟動時的權限模式 | `default`／`acceptEdits`／`plan`／`bypassPermissions` 等 |
+| `claude update` | 更新 Claude Code 到最新版本 | |
+| `claude doctor` | 印出診斷資訊，不啟動 session | 跟對話裡的 `/doctor` 效果類似，差在不進互動畫面 |
+| `claude --version` / `-v` | 顯示目前安裝的版本號 | |
+
+## ⚠️ 限制與注意
+
+- **這張表一定會過時**：Claude Code 更新很快，指令、快捷鍵、旗標都可能改名或被取代。遇到跟你實際看到的不一樣，
+  以終端機裡打 `/help` 看到的清單、或官方 [cli-reference](https://docs.claude.com/en/docs/claude-code/cli-reference) 為準，不要信這頁。
+- 本頁基準版本見 frontmatter 的 `base_version`；比這個版本更新之後才加入的指令，這頁不會有。
+- 部分指令依你的平台、方案而定，不是每個帳號都看得到本頁列出的全部項目（例如企業限定或還在測試中的功能）。
+- macOS 上部分快捷鍵（例如 `Alt+B`、`Alt+M`、`Alt+P`）需要先在終端機設定裡把 Option 設成 Meta 鍵才會動，
+  設定步驟請查終端機軟體本身的官方文件，這裡不重複列。
+
+## 👉 下一步
+
+- [slash commands 完整介紹](../reference/slash-commands/)：想知道指令運作的原理、自訂指令怎麼寫
+- [對話與基本操作](../reference/conversation-basics/)：這頁只列操作結果，完整脈絡在這裡
+- [疑難排解](../troubleshooting/)：操作起來怪怪的，先來這裡查症狀

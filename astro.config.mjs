@@ -97,9 +97,16 @@ export default defineConfig({
 					],
 				},
 				{
-					label: '詞彙表',
+					label: '版本更新',
+					items: [
+						{ label: '這區在做什麼', slug: 'updates' },
+					],
+				},
+				{
+					label: '詞彙表／速查',
 					items: [
 						{ label: '看不懂的字查這裡', slug: 'glossary' },
+						{ label: '單頁指令速查表', slug: 'cheatsheet' },
 					],
 				},
 			],
