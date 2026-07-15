@@ -34,6 +34,7 @@
       "PowerShell(npm run build*)",
       "Bash(node scripts/check-links.mjs*)",
       "PowerShell(node scripts/check-links.mjs*)",
+      "Bash(grep*)",
       "Edit(src/content/docs/updates/**)",
       "Write(src/content/docs/updates/**)",
       "Edit(src/data/content-state.json)",

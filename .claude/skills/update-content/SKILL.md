@@ -23,8 +23,9 @@ changelog 由新到舊排列。取 `(last_covered_version, 最新版]` 區間的
 
 ### 3. 開分支
 ```
-git checkout -b content/update-<最新版號>
+git switch -C content/update-<最新版號>
 ```
+（用 `switch -C`：分支已存在時直接重置重用，避免上次中斷的殘留分支擋路。版號中的 `.` 改為 `-`。）
 
 ### 4. 產草稿頁 `src/content/docs/updates/v<起>-to-v<迄>.mdx`
 檔名版號以 `-` 代 `.`（例：`v2-1-208-to-v2-1-210.mdx`）；單一版本則 `v<版號>.mdx`。
@@ -53,6 +54,7 @@ npm run build
 node scripts/check-links.mjs
 ```
 另掃新增檔案：不得含 `<!--`（MDX 註解一律 `{/* */}`）、不得含 `</content>` 殘留、不得混入簡體字。
+**掃描一律用內建 Grep 工具（read-only，免核准），絕對不要用 Bash 跑 `grep`／`sed`／`awk`**——這些指令不在允許清單，無人值守時會卡權限提示直接吊死（2026-07-15 實測踩過：run 在此步驟停擺）。
 
 ### 8. 開 draft PR
 ```
@@ -80,5 +82,5 @@ PR body 固定檢查清單（SPEC #7）：
 
 ## 限制與紀律
 - Context 控制：只讀 changelog 增量與受影響頁面，不要整站重讀（額度失控向量，PLAN 成本表）。
-- 內容規範沿站規：繁體中文、指令與功能名保留英文、內部連結一律相對路徑（`updates/` 頁深度為 1，連 `reference/` 用 `../reference/<slug>/`）、兩層深度寫法（入門段先行）。
-- 排程 session 注意：通知不可靠，結果以 draft PR 是否存在為準；工具權限依 `.claude/settings.json` 允許清單，遇到清單外指令不要繞路改用其他指令硬跑，直接在回報中記錄缺哪條規則。
+- 內容規範沿站規：繁體中文、指令與功能名保留英文、兩層深度寫法（入門段先行）。內部連結一律相對路徑，注意深度：`updates/index` 深度 1（`../reference/<slug>/`），**版本頁深度 2**（`../../reference/<slug>/`、`../../compare/`）。
+- 排程 session 注意：通知不可靠，結果以 draft PR 是否存在為準；工具權限依 `.claude/settings.json` 允許清單——**只用清單內的指令形態**（`cd "<repo路徑>" && <允許的指令>` 的複合式可用；檔案讀取與文字搜尋一律用內建 Read／Grep 工具，不經 Bash）。遇到清單外指令不要繞路改用其他指令硬跑，直接在回報中記錄缺哪條規則。
