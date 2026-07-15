@@ -9,10 +9,13 @@ last_reviewed: 2026-07-13
 ---
 
 import { Tabs, TabItem, Steps, CardGrid, Card } from '@astrojs/starlight/components';
+import PathStep from '../../../components/PathStep.astro';
+
+<PathStep step={5} />
 
 ## 🧭 先備知識
 
-- [跟 Claude 對話的基本功](../../learn/how-to-talk-to-claude/)——這一課會用到「把需求講具體」的技巧。
+- 這是學習路徑最後一站，假設你已經走完[第一個專案](../../learn/first-project/)軌道——特別是「它又要你重講一次」那一站。你在那裡已經寫過第一條規則了，這一課教你把這件事變成習慣。
 - [CLAUDE.md 與記憶](../../reference/claude-md-memory/)——如果你還不知道 CLAUDE.md 是什麼、放在哪裡會被讀到，先看那一課，這裡不重講機制。
 
 ## 🎯 這一課要幹嘛
@@ -183,4 +186,8 @@ CLAUDE.md 的內容會被讀進 Claude 的 context，公開 repo 更會被任何
 
 ## 👉 下一步
 
-- [用第一個真實專案練手](../../learn/first-project/)——把你剛寫的三條規則，套到一個真的會用到的專案上，看它們撐不撐得住。
+🎉 走到這裡，學習路徑五站都完成了。接下來：
+
+- [下一步地圖](../../learn/first-project/next-step-map/)——把「卡關→怎麼問→發現功能→沉澱規則」的循環，帶到你自己的真實專案上，看你剛寫的三條規則撐不撐得住。
+- [功能參考](../../reference/what-is-claude-code/)——之後遇到不懂的功能，把這區當字典查；[情境索引](../../scenarios/)用「我想要…」找。
+- 選讀：[官方免費課程（Anthropic Academy）](../../learn/anthropic-academy/)——想更系統化地學，看這篇導覽。

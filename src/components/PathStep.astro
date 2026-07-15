@@ -1,0 +1,77 @@
+---
+// 學習路徑主線標記（5 站）：讓讀者在每一課頂部都知道「我在第幾站、上一站下一站是什麼」。
+// 連結用 BASE_URL 組完整路徑——本元件被不同深度的頁面引用，相對路徑會斷（SPEC #1 base 坑）。
+const { step } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const stations = [
+	{ n: 1, label: '第一次啟動', href: `${base}/learn/getting-started/` },
+	{ n: 2, label: '怎麼跟它說話', href: `${base}/learn/how-to-talk-to-claude/` },
+	{ n: 3, label: '第一個專案', href: `${base}/learn/first-project/` },
+	{ n: 4, label: '安心使用', href: `${base}/trust/where-does-data-go/` },
+	{ n: 5, label: '你的 CLAUDE.md', href: `${base}/learn/your-own-claude-md/` },
+];
+---
+
+<nav class="path-step" aria-label={`學習路徑：你在第 ${step} 站，共 5 站`}>
+	<span class="path-step__label">🚏 學習路徑 {step}/5</span>
+	<ol>
+		{stations.map((s) =>
+			s.n === step ? (
+				<li class="current"><span aria-current="step">{s.n} {s.label}</span></li>
+			) : (
+				<li><a href={s.href}>{s.n} {s.label}</a></li>
+			)
+		)}
+	</ol>
+</nav>
+
+<style>
+	.path-step {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.4rem 0.6rem;
+		margin-top: 1rem;
+		padding: 0.6rem 0.9rem;
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 0.75rem;
+		background: var(--sl-color-gray-6);
+		font-size: var(--sl-text-sm);
+	}
+	.path-step__label {
+		font-weight: 700;
+		color: var(--sl-color-white);
+		white-space: nowrap;
+	}
+	.path-step ol {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.3rem 0.4rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.path-step li {
+		margin: 0;
+	}
+	.path-step li a,
+	.path-step li span {
+		display: inline-block;
+		padding: 0.15rem 0.6rem;
+		border-radius: 999px;
+		white-space: nowrap;
+		text-decoration: none;
+		color: var(--sl-color-gray-2);
+		border: 1px solid var(--sl-color-gray-5);
+	}
+	.path-step li a:hover {
+		color: var(--sl-color-white);
+		border-color: var(--sl-color-gray-3);
+	}
+	.path-step li.current span {
+		color: #fff;
+		background: var(--sl-color-accent);
+		border-color: transparent;
+		font-weight: 700;
+	}
+</style>

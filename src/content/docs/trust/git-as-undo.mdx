@@ -11,6 +11,9 @@ last_reviewed: 2026-07-14
 ---
 
 import { Steps, Card, CardGrid } from '@astrojs/starlight/components';
+import PathStep from '../../../components/PathStep.astro';
+
+<PathStep step={4} />
 
 ## 🧭 先備知識
 
@@ -122,7 +125,7 @@ Claude Code 自己也有一個內建的回溯功能（按兩下 `Esc`，或打 `
 
 ## ➡️ 下一步
 
+- **學習路徑第 5 站：[打造你自己的 CLAUDE.md](../../learn/your-own-claude-md/)**——安心使用章到這裡讀完了，最後一站把你一路沉澱的規則，寫成自己的 CLAUDE.md
 - [不該分享的東西](../../trust/what-not-to-share/)：存檔前，先確認沒有不該進 commit 的東西
 - [怎麼檢查 AI 的輸出](../../trust/verify-ai-output/)：存檔是事後的退路，驗收是事前把關，兩個搭配才安心
 - [內建工具](../../reference/built-in-tools/)：Claude 執行 Bash 指令（含 git）時，權限系統怎麼運作
-- [第一個專案](../../learn/first-project/)：把「先存檔再動手」的習慣，用在一個實際任務上

@@ -32,20 +32,19 @@ export default defineConfig({
 				// 在深/淺色切換旁加「風格」選單（潑墨／手繪／乾淨）
 				ThemeSelect: './src/components/CustomThemeSelect.astro',
 			},
-			// SPEC #6 資訊架構。Phase 1 只掛「功能參考」節（其餘節於 Phase 2/3 上線）。
+			// SPEC #6 資訊架構＋學習路徑主線 5 站（2026-07-15 第 12 輪順序修復：
+			// 側欄即課程順序——CLAUDE.md 課移到軌道之後（just-in-time），Academy 移出主線改選讀）。
 			// 順序顯式列出，對齊 SPEC #6 參考頁清單（不用 autogenerate，避免字母序打亂閱讀動線）。
 			sidebar: [
 				{
 					label: '開始使用',
 					items: [
-						{ label: '第一次啟動 Claude Code', slug: 'learn/getting-started' },
-						{ label: '怎麼跟 Claude 說話', slug: 'learn/how-to-talk-to-claude' },
-						{ label: '打造你自己的 CLAUDE.md', slug: 'learn/your-own-claude-md' },
-						{ label: '官方免費課程（Anthropic Academy）', slug: 'learn/anthropic-academy' },
+						{ label: '① 第一次啟動 Claude Code', slug: 'learn/getting-started' },
+						{ label: '② 怎麼跟 Claude 說話', slug: 'learn/how-to-talk-to-claude' },
 					],
 				},
 				{
-					label: '第一個專案',
+					label: '③ 第一個專案',
 					items: [
 						{ label: '軌道總覽：邊做邊學', slug: 'learn/first-project' },
 						{ label: 'A：整理練習資料夾', slug: 'learn/first-project/track-a-organize-folder' },
@@ -54,13 +53,20 @@ export default defineConfig({
 					],
 				},
 				{
-					label: '安心使用',
+					label: '④ 安心使用',
 					items: [
 						{ label: '你的資料會去哪裡', slug: 'trust/where-does-data-go' },
 						{ label: '什麼不該給 AI', slug: 'trust/what-not-to-share' },
 						{ label: '權限是你的保險', slug: 'trust/permissions-as-insurance' },
 						{ label: 'AI 會犯錯——怎麼驗證', slug: 'trust/verify-ai-output' },
 						{ label: 'git 是你的後悔藥', slug: 'trust/git-as-undo' },
+					],
+				},
+				{
+					label: '更進一步',
+					items: [
+						{ label: '⑤ 打造你自己的 CLAUDE.md', slug: 'learn/your-own-claude-md' },
+						{ label: '選讀：官方免費課程（Academy）', slug: 'learn/anthropic-academy' },
 					],
 				},
 				{
