@@ -1,14 +1,17 @@
 ---
 title: 'B 軌道：文件批次摘要'
 description: 讓 Claude 幫你把一堆文件整理成一份摘要，邊做邊撞到 Claude Code 的核心功能。
-base_version: '2.1.207'
+base_version: '2.1.210'
 sources:
   - https://docs.claude.com/en/docs/claude-code/settings
   - https://docs.claude.com/en/docs/claude-code/memory
   - https://docs.claude.com/en/docs/claude-code/skills
   - https://docs.claude.com/en/docs/claude-code/mcp
+  - https://code.claude.com/docs/en/permissions
+  - https://docs.claude.com/en/docs/claude-code/checkpointing
+  - https://docs.claude.com/en/docs/claude-code/common-workflows
 audience: beginner
-last_reviewed: 2026-07-13
+last_reviewed: 2026-07-17
 ---
 
 import { Steps } from '@astrojs/starlight/components';
@@ -113,6 +116,67 @@ import PathStep from '../../../../components/PathStep.astro';
 **你會看到**：Claude 說明可以透過 MCP 連接器接上像 Notion 這樣的外部服務，讓它直接讀取，不用你手動搬資料。非工程師只需要知道：到 Anthropic 已審核過的 Directory 挑一個現成連接器加進來、用 `/mcp` 完成登入即可，**不需要自己動手寫**一個連接器——那是開發者軌道的事。深入了解：[MCP 連接器](../../../reference/mcp/)。
 
 **這一站你沉澱了哪條規則？** 需要接外部資料時，先想「有沒有現成、已審核過的連接器」，不要一開始就想自己寫一個。
+
+## 💾 第六站：先存檔，再放手
+
+<Steps>
+1. 產出第一批摘要後，跟 Claude 說：「幫我把現在的成果用 git 存檔一次。」
+2. 存檔完成後，故意做一件會後悔的事：跟它說「把所有摘要合併成一個大檔案，原本分開的檔案都刪掉。」
+3. 看著合併後的結果，發現你比較想要分開的檔案 → 跟它說：「我不要剛才那個改動了，幫我回到剛才的存檔點。」
+</Steps>
+
+**你會看到**：分開的摘要檔案原封不動地回來了，合併、刪除的動作都被撤銷——不用學任何 git 指令，全程用講的。
+
+<details>
+<summary>做壞了怎麼辦？</summary>
+如果存檔點跑掉、或 Claude 說找不到可以回去的版本，代表這次示範沒抓好時機——重新解壓縮 `sample-docs.zip`，從第一站重新走一次即可，不影響任何真實資料。
+</details>
+
+**這一站你沉澱了哪條規則？** 「批次處理前先存檔」——先存過一次檔，後面不管做壞什麼都能回頭。深入了解：[git 是你的後悔藥](../../../trust/git-as-undo/)。
+
+## 🔓 第七站：讓它記住你的允許
+
+情境：每寫一個摘要檔都要允許一次，很煩。
+
+<Steps>
+1. 跟 Claude 說：「在這個資料夾裡建立和編輯摘要檔案，以後不用每次都問我。幫我設定，範圍只限這個資料夾。」
+2. **先看過它打算加的規則長什麼樣子，覺得合理再答應**——不要看到「可以幫你設定」就反射性同意。
+3. 答應之後，再請它補一份摘要，看看這次還跳不跳確認。
+</Steps>
+
+**你會看到**：同一類「在這個資料夾寫摘要檔」的操作，之後不再跳出確認視窗。
+
+:::caution[誠實提醒]
+- 允許規則等於在安全關卡上開一個小洞，範圍越窄越好——這裡只該放行「這個資料夾裡的摘要檔案」，不是整台電腦的檔案都能寫。
+- 刪除類的操作不要放行；這類動作留著每次都問，比較安心。
+- 權限提示裡「這個對話不要再問」的效果，不同動作記住的時間長短不一樣：像這裡的「編輯／寫入檔案」，官方文件寫明只記到這次對話結束，換一個新對話又會重新問一次；真的要它以後每次開新對話都不再問，規則得實際寫進設定檔（`.claude/settings.local.json` 之類）才長期有效——這也是這一站請 Claude「幫我設定」、而不是只按過一次確認視窗的原因。
+:::
+
+<details>
+<summary>做壞了怎麼辦？</summary>
+設定的允許範圍不如預期，直接跟 Claude 說：「把剛才加的那條允許規則拿掉」，它會帶你改回設定檔，不影響任何摘要內容。
+</details>
+
+**這一站你沉澱了哪條規則？** 常重複做的同一類操作，先看清楚範圍再放行，不要為了圖方便一次把整個工具都打開。深入了解：[settings 與權限模式](../../../reference/settings-permissions/)。
+
+## 🔍 第八站：抓它一次錯
+
+<Steps>
+1. 請 Claude 給每一份摘要標上「原始文件檔名」，方便你之後對照。
+2. 隨機挑一份摘要，自己打開對應的原始文件讀一遍，對照摘要有沒有漏掉重點、有沒有寫出原文根本沒講的東西。
+3. 問它：「這批摘要裡，哪一份你最沒把握？為什麼？」
+</Steps>
+
+**你會看到**：摘要通常大致正確，但常常會有取捨或小出入——**摘要是它的理解，不是原文的替身**。被追問「哪一份最沒把握」時，它通常答得出來，會指出某份文件內容比較模糊或跳躍的地方。
+
+重點句：關鍵文件永遠回頭讀一次原文；抽查加追問，是最簡單的驗收法。
+
+<details>
+<summary>做壞了怎麼辦？</summary>
+這一站不會改動任何檔案，只是讀跟問——沒抓到落差也沒關係，代表這批摘要品質不錯，換一份文件再抽查一次即可。
+</details>
+
+**這一站你沉澱了哪條規則？** 「重要文件的摘要，一定回原文抽查一次」。深入了解：[怎麼檢查 AI 的輸出](../../../trust/verify-ai-output/)。
 
 ## ⚠️ 限制與注意
 
