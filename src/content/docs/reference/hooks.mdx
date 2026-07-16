@@ -6,7 +6,7 @@ sources:
   - https://docs.claude.com/en/docs/claude-code/hooks
   - https://docs.claude.com/en/docs/claude-code/hooks-guide
 audience: dev
-last_reviewed: 2026-07-13
+last_reviewed: 2026-07-17
 ---
 
 :::note[先備知識]
@@ -75,6 +75,77 @@ fi
 ```
 
 其他典型用途：`PostToolUse` 在編輯成功後自動跑 formatter 或 lint；`Notification` 在 Claude 等待你輸入時發桌面通知；`SessionStart` 在對話一開始就注入目前分支、待辦事項等專案狀態；任何事件都能拿來做審計記錄（把每次觸發的事件寫進 log 檔）。
+
+## 🛠️ 實戰進階
+
+### 範例一：PostToolUse——編輯完自動跑格式檢查
+
+```json title=".claude/settings.json"
+{
+  "hooks": {
+    "PostToolUse": [
+      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/check-format.sh" }] }
+    ]
+  }
+}
+```
+
+```bash title=".claude/hooks/check-format.sh"
+#!/bin/bash
+FILE_PATH=$(jq -r '.tool_input.file_path')  # 這次被 Claude 編輯的檔案
+
+if ! npx prettier --check "$FILE_PATH" 2>/dev/null; then
+  echo "格式不符合專案規範，建議跑：npx prettier --write \"$FILE_PATH\"" >&2
+  exit 2  # 回饋給 Claude，讓它知道要處理
+fi
+```
+
+### 範例二：PreToolUse——擋下危險指令並附說明
+
+```json title=".claude/settings.json"
+{
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Bash", "hooks": [{ "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/block-rm-rf.sh" }] }
+    ]
+  }
+}
+```
+
+```bash title=".claude/hooks/block-rm-rf.sh"
+#!/bin/bash
+COMMAND=$(jq -r '.tool_input.command')
+
+if echo "$COMMAND" | grep -q 'rm -rf'; then
+  jq -n '{hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: "偵測到 rm -rf，這類指令無法復原，已自動擋下，請手動確認後再執行"}}'
+else
+  exit 0
+fi
+```
+
+兩者的差別：範例一是事後檢查，`PostToolUse` 觸發時編輯已經發生，hook 只能把結果講給 Claude 聽，不能讓檔案「沒被寫入」；範例二是事前擋，`PreToolUse` 用 `hookSpecificOutput.permissionDecision: "deny"` 回應時，Claude 連工具都不會真的執行，`permissionDecisionReason` 會直接講給 Claude（進而講給你）聽是什麼原因。
+
+### hook 的輸出怎麼決定放行或擋下：exit code 是第一層判斷
+
+| exit code | 行為 |
+|---|---|
+| `0` | 正常結束；若 stdout 是合法 JSON，照 JSON 內容決定後續（見下）；不是 JSON 就正常放行 |
+| `2` | 阻擋：stderr 內容回饋給 Claude 當錯誤訊息；`PreToolUse` 事件會直接擋下這次工具呼叫 |
+| 其他非 0（含慣例上代表失敗的 `1`） | 視為非阻塞錯誤，只跳一則「`<hook name> hook error`」通知，流程照常繼續——`1` 在這裡不等於「擋下」 |
+
+exit 0 且 stdout 是 JSON 時，`PreToolUse` 可用 `hookSpecificOutput.permissionDecision`（`allow` / `deny` / `ask`）明確表態；`continue: false` 能讓 Claude 整個停下來（配 `stopReason` 顯示原因）；`additionalContext` 可以塞一段文字進 Claude 的上下文，但不擋任何動作。deny 選擇用 JSON 而不只用 exit 2，是因為可以附 `permissionDecisionReason` 讓 Claude 看得懂被擋的原因，光靠 exit 2 就只有 stderr 那一行字可以說明。
+
+### 跟相鄰機制的邊界
+
+- **hooks**：保證執行的自動化，不管 Claude 當下怎麼判斷都會跑；用在「這件事不能只靠 AI 記得」。
+- **[權限規則](../settings-permissions/)**：只決定「要不要跳出來問你、還是直接放行/擋下」，本身不會多做事；同一件「永遠不准做」的事，寫一條 deny 規則比寫 hook 簡單。
+- **[CLAUDE.md](../claude-md-memory/)**：給 Claude 的建議，Claude 會參考但仍是自己判斷要不要照做，沒有強制力。
+- **[skills](../skills/)**：給 Claude 的方法手冊，只有被觸發或主動呼叫時才派上用場，不是每次都跑。
+
+### 常見誤用
+
+- **該用 deny 規則的事寫成 hook**：如果目的只是「這個指令永遠不准跑」，一條權限規則就夠了；繞去寫一支 hook 腳本，是多花力氣維護一個原本不需要的自動化。
+- **hook 指令太慢，拖累每一次動作**：`command` 類型 hook 預設 timeout 是 600 秒，逾時算非阻塞錯誤、流程照常繼續，不會讓 Claude Code 卡死，但你會等；hook 腳本盡量做輕量檢查，重的工作丟到別處觸發。
 
 ## 限制與注意
 

@@ -1,12 +1,12 @@
 ---
 title: MCP 連接器
 description: 讓 Claude Code 讀寫外部工具與資料（GitHub、資料庫、Notion 等）的開放標準協定，本頁也教非工程師怎麼安全使用現成連接器。
-base_version: '2.1.207'
+base_version: '2.1.210'
 sources:
   - https://docs.claude.com/en/docs/claude-code/mcp
   - https://code.claude.com/docs/en/security
 audience: both
-last_reviewed: 2026-07-13
+last_reviewed: 2026-07-17
 ---
 
 :::note[先備知識]
@@ -47,6 +47,47 @@ claude mcp add --transport stdio db -- npx -y some-db-mcp-server --dsn "..."
 ```
 
 連接器有三種儲存範圍（scope）：`local`（預設，只在目前專案、只有你自己看得到）、`project`（寫進 `.mcp.json`，可以 commit 進 repo 跟團隊共用，但每個人第一次使用前需要手動核准）、`user`（跨所有專案，只有你自己看得到）。管理指令：`claude mcp list` 列出所有已設定的伺服器、`claude mcp get <name>` 看單一伺服器細節、`claude mcp remove <name>` 移除。
+
+## 🛠️ 實戰進階
+
+上面「進一步了解」講的是概念，這裡把「加一個連接器到能用」的完整流程、scope 怎麼選、跟安全上要注意的事，一次講完。
+
+### 加一個現成連接器：完整流程
+
+1. 到 [Anthropic Directory](https://claude.ai/directory) 挑一個已經審核過的連接器（例如 Sentry、GitHub、Notion）——這裡列的都是官方審過的來源，比自己隨便找一個 MCP server 網址來裝安全得多。
+2. 用 `claude mcp add --transport http <name> <url>` 加進來（HTTP 是官方目前推薦的雲端服務連線方式）：
+
+```bash
+# 以 Sentry 為例，加一個遠端連接器
+claude mcp add --transport http sentry https://mcp.sentry.dev/mcp
+```
+
+3. 在 Claude Code 對話裡輸入 `/mcp`，跟著畫面走瀏覽器 OAuth 登入。登入完就能直接問，例如「最近 24 小時最常見的錯誤是什麼」，Claude 會自己呼叫連接器的工具去查，不用你先去後台複製資料貼過來。
+
+### scope 怎麼選
+
+先問自己一句：「這個連接器只有我要用，還是團隊都要用？」
+
+- **local**（預設）：存在 `~/.claude.json` 裡目前這個專案底下，只有你自己看得到，不會出現在你的其他專案。個人試用、還在測試、或帶著不想進版控的機密資訊的連接器，放這裡。
+- **project**：寫進專案根目錄的 `.mcp.json`，可以 commit 進 repo，讓團隊每個人用同一套連接器設定。團隊共用的放這裡；但每個人第一次使用前，Claude Code 都會要求手動核准（`claude mcp list` 會顯示 `⏸ Pending approval`）。
+- **user**：一樣存在 `~/.claude.json`，但跨你所有專案都能用，只有你自己看得到。個人常用、每個專案都想帶著走的工具放這裡。
+
+```bash
+claude mcp add --transport http paypal --scope project https://mcp.paypal.com/mcp
+claude mcp add --transport http hubspot --scope user https://mcp.hubspot.com/anthropic
+```
+
+### 安全三件事
+
+- **只裝信任來源的連接器**：官方文件寫得很直接——"Verify you trust each server before connecting it. Servers that fetch external content can expose you to prompt injection risk."（連接前先確認你信任它，會抓外部內容的伺服器可能讓你暴露在 prompt injection 風險下）。連接器等於替 Claude 開一扇對外的門，門後面是誰蓋的、信不信得過，裝之前先想清楚。
+- **連接器回傳的內容是「資料」不是「指令」**：這個機制下面「限制與注意」節已經展開講過，不重複；還沒讀過的話，先看那裡跟 [你不該分享的東西](../../trust/what-not-to-share/)。
+- **裝而不用照樣佔一點 context，久了記得清**：Claude Code 預設開啟 tool search，只有伺服器名稱與 server instructions 常駐在 context 裡，實際工具定義要用到才載入——官方原文是「adding more MCP servers has minimal impact on your context window」。但「minimal」不是 0，好一陣子沒在用的連接器，用 `claude mcp remove <name>` 清掉，清單也乾淨。
+
+### 跟相鄰機制的邊界
+
+- **MCP**：把外部服務「接上」，適合你會反覆回去查、反覆操作的系統（issue tracker、資料庫、監控後台）。
+- **WebFetch**：抓一次性的網頁內容，不用建立長期連線也不用登入授權時，用這個就好，不必為了看一篇網頁去裝連接器。
+- **[skill](../skills/)**：教 Claude「怎麼做一件事」的方法／流程，本身不連外部服務——skill 裡可以呼叫 MCP 連接器，但兩者解決的是不同問題。
 
 ## 限制與注意
 

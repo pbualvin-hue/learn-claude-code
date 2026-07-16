@@ -7,7 +7,7 @@ sources:
   - https://docs.claude.com/en/docs/claude-code/permissions
   - https://code.claude.com/docs/en/permission-modes
 audience: both
-last_reviewed: 2026-07-16
+last_reviewed: 2026-07-17
 ---
 
 :::note[先備知識]
@@ -76,6 +76,56 @@ last_reviewed: 2026-07-16
 - 防守設計：`defaultMode: "auto"` 寫在專案層 `.claude/settings.json` 或 `settings.local.json` 會被**忽略**——repo 不能替自己打開 auto 模式；要開只能寫在你自己的 `~/.claude/settings.json`。
 - `dontAsk` 模式下，`ask` 規則命中的動作會被直接拒絕而不是詢問（這個模式從頭到尾不會收集任何回答）。
 - `bypassPermissions` 風險最高：官方明確建議只在容器或 VM 這類「壞了也沒關係」的隔離環境用，一般開發專案不建議開啟。
+
+## 🛠️ 實戰進階
+
+### 一份可抄的窄允許清單
+
+{/* 範例已去識別化：路徑與規則皆為通用示意，非任何真實專案設定 */}
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Edit(docs/**)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./secrets/**)"
+    ]
+  }
+}
+```
+
+- `Bash(git status*)` / `log` / `diff`：這三個其實本來就在官方內建的「唯讀指令」清單裡，任何模式下都不會跳出詢問，寫進 `allow` 主要是「白紙黑字讓團隊看得到意圖」，不是真的靠它才放行——這點常被誤會成「有寫才有用」。
+- `Edit(docs/**)`：寫入規則只認 `Edit(路徑)` 這一種形態（詳見下方「限制與注意」），`Write(docs/**)` 或 `Glob(docs/**)` 這類寫法看起來合理，實際上啟動時只會收到警告、完全不生效。
+- `Read(./.env)` 擋最常見的密鑰外洩管道；但 deny `Read` 只會連帶擋住同路徑的 `Edit`（含新建檔案），擋不住 `Write` 直接蓋一個新的 `.env`，真的要滴水不漏得再補一條 `Edit(./.env)` deny。
+- `Read(./secrets/**)`：沿用 gitignore 語法，擋的是「目前目錄以下」的 `secrets/`，不是整台機器——想擋全機器要寫成 `Read(//**/secrets/**)`。
+
+### 前綴比對的實務坑：旗標一變就失守
+
+下方「限制與注意」提到用萬用字元限制 curl 網址很脆弱（多個旗標、換協定都能繞過），這裡補一個更貼身的版本：`allow` 對 Bash 指令是「字串前綴＋詞界」比對，同一個指令換個旗標組合，在規則眼裡就是完全不同的字串。
+
+**本站實測**：本站排程管線抓官方 changelog 時，只寫一條「乾淨版」`Bash(curl https://raw.githubusercontent.com/...*)` 規則，結果草稿有時候多帶 `-s`（安靜模式）、有時候多帶 `-sL`（安靜＋跟隨轉址）抓同一個網址，兩種都各自被卡下來重問一次——旗標插在網址前面，前綴就對不上了。最後解法不是把規則寫得更「聰明」，而是老實地對同一個網址前綴分別列出「無旗標／`-s`／`-sL`」三條規則，才把常見的呼叫方式都涵蓋到。真的要一勞永逸，官方建議的做法是別再用 Bash 規則圍堵網址，改成 deny 擋掉 `curl`／`wget` 整個指令，另外用以網域為單位的 `WebFetch(domain:example.com)` 放行。
+
+### 分層怎麼選
+
+| 放這層 | 位置 | 放什麼 | 例子 |
+| --- | --- | --- | --- |
+| 專案層 | `.claude/settings.json` | 團隊都該遵守、進版控的標準規則 | 團隊共識「禁止直接 `git push` 到 main」，寫成 `deny: ["Bash(git push origin main)"]` |
+| 本機層 | `.claude/settings.local.json` | 只有你自己會用到、不想讓隊友也套用的例外 | 你電腦上一支本機除錯腳本的路徑允許，或實驗階段暫時放寬的規則 |
+| 使用者層 | `~/.claude/settings.json` | 你個人在所有專案都想要的習慣 | 允許讀你自己的 `~/.zshrc`、或設定你偏好的 `defaultMode` |
+
+分層要問的其實是「這條規則該不該進版控、給不給隊友看到」，不是「哪一層優先」——如同前面提過的，權限規則是跨層合併，不是後面蓋掉前面。
+
+### 跟相鄰機制的邊界
+
+- **權限規則（本頁）**：工具層硬擋，不管 Claude 想不想做，符合條件就是擋下來——確定「無論如何都不能做」時用它。
+- **[hooks](../hooks/)**：想在某個動作前後插入你自己寫的檢查邏輯（不是單純允許/擋，而是要跑一段程式去判斷）時用。
+- **[CLAUDE.md 與記憶](../claude-md-memory/)**：模型層的建議，只是讓 Claude「傾向」怎麼做，沒有強制力；想再理解為什麼權限規則比建議可靠，可看 [權限是你的保險](../../trust/permissions-as-insurance/)。
 
 ## 限制與注意
 

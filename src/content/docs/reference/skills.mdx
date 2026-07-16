@@ -1,11 +1,11 @@
 ---
 title: skills
 description: 把常常重複貼的指示或流程封裝成 SKILL.md，讓 Claude 需要時才載入，不用每次重打
-base_version: '2.1.207'
+base_version: '2.1.210'
 sources:
   - https://docs.claude.com/en/docs/claude-code/skills
 audience: dev
-last_reviewed: 2026-07-13
+last_reviewed: 2026-07-17
 ---
 
 :::note[先備知識]
@@ -48,6 +48,47 @@ risks you notice such as missing error handling or hardcoded values.
 **參數**：呼叫時帶的文字可用 `$ARGUMENTS` 取得全部，或用 `$0`、`$1` 取單一個參數，例如 `/fix-issue 123` 會把 `123` 代入 `$ARGUMENTS`。
 
 **skill 跟 subagent 的差別**：skill 是「方法」——一段指示，預設在你目前的對話 context 裡直接執行；[subagent](../subagents/) 是「執行者」——一個有自己獨立 context、工具與權限的 agent。可以把 skill 想成說明書，subagent 想成照著說明書做事的人。兩者能合體：skill 加上 `context: fork` 這個 frontmatter 欄位，就是把這份說明書交給一個獨立 subagent 去執行，執行過程不會塞進你的主對話。
+
+## 🛠️ 實戰進階
+
+以下用一個貼近「專案驅動」教材風格的情境，把 skill 從「看得懂」練到「自己寫得出來」。
+
+**最小可抄範例**：情境是專案裡有個 `notes/inbox/` 資料夾堆了一堆沒整理的筆記，你常常叫 Claude「幫我把 inbox 的筆記歸檔」。這個資料夾只屬於這個專案，所以存成專案 skill：
+
+```yaml
+---
+name: organize-notes
+description: Sorts loose Markdown notes in notes/inbox/ into dated folders and writes a one-line summary index. Use when the user asks to clean up notes, file away the inbox, or wants an index of what's been archived.
+---
+
+## Instructions
+1. List every `.md` file in `notes/inbox/`.
+2. Read each file's content and modified date.
+3. Move it into `notes/archive/<YYYY>/<MM>/`.
+4. Append one line to `notes/archive/index.md`：日期、檔名、一句摘要。
+5. 回報總共歸檔了幾個檔案。
+```
+
+存成 `.claude/skills/organize-notes/SKILL.md`。輸入 `/organize-notes` 手動叫出來，或直接跟 Claude 說「幫我整理一下 inbox」讓它自己判斷要不要用。
+
+**description 就是觸發器**：Claude 判斷「這次對話用不用得上這個 skill」只看 `description`，不會先讀完整份指示再決定。同一個 skill，換一下 description 差很多：
+
+- 壞：`description: 整理筆記`——沒講清楚什麼情境該用，Claude 很難把使用者的某一句話對上這個 skill。
+- 好：`description: Sorts loose Markdown notes in notes/inbox/ into dated folders and writes a one-line summary index. Use when the user asks to clean up notes, file away the inbox, or wants an index of what's been archived.`——講清楚做什麼＋列出使用者可能講的觸發語句。
+
+skill 該觸發卻沒觸發、或觸發得太頻繁，第一步永遠是改 `description`，不是改內容本身。
+
+**參數**：呼叫時帶的文字可用 `$ARGUMENTS` 整包取出；要抓單一個參數用 `$0`（第一個）、`$1`（第二個）……以此類推（`$N` 是 `$ARGUMENTS[N]` 的簡寫，位置從 0 算起）。多字的參數要用引號包起來才會被當一個參數，例如 `/organize-notes "old notes" archive` 會讓 `$0` 等於 `old notes`。
+
+從 2.1.210 起，少傳的位置佔位符會「原樣保留」在內容裡，不再被靜默刪除——只傳了一個參數時，內容裡的 `$1` 會照字面留著，不是無聲消失變空字串。這是個實用的除錯訊號：如果 Claude 的回覆裡真的出現一段文字 `$1`，代表你少傳了參數，先去檢查呼叫指令，不用懷疑是 skill 本身壞了。
+
+**跟相鄰機制的邊界**：三個常被搞混的東西，各自解決不同問題——
+
+- **skill**：一份「需要時才翻出來」的操作手冊，適合重複性的多步驟流程（像上面的歸檔任務）。
+- **[CLAUDE.md](../claude-md-memory/)**：每次對話都跟著載入的偏好與事實（像「commit message 用英文」），不是流程。
+- **[subagent](../subagents/)**：有自己獨立 context、工具、權限的執行者，適合要隔離、要平行、或要限制工具存取的任務。
+
+常見的錯位是兩個方向都會發生：把「每次都該遵守的偏好」寫成 skill（Claude 得先判斷這次用不用得上，反而不穩定），或是把「一段多步驟流程」硬塞進 CLAUDE.md（每次對話都背著這段流程佔 context，不用的時候也在燒 token）。判斷原則很簡單：講的是事實或偏好放 CLAUDE.md，講的是「怎麼做一件事」寫成 skill。
 
 ## 限制與注意
 
