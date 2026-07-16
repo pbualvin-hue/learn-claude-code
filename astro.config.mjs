@@ -63,10 +63,22 @@ export default defineConfig({
 					],
 				},
 				{
-					label: '更進一步',
+					label: '⑤ 你的 CLAUDE.md',
 					items: [
-						{ label: '⑤ 打造你自己的 CLAUDE.md', slug: 'learn/your-own-claude-md' },
-						{ label: '選讀：官方免費課程（Academy）', slug: 'learn/anthropic-academy' },
+						{ label: '打造你自己的 CLAUDE.md', slug: 'learn/your-own-claude-md' },
+					],
+				},
+				{
+					label: '⑥ 帶自己的專案上路',
+					items: [
+						{ label: '挑對你的第一個真實專案', slug: 'learn/bring-your-own' },
+						{ label: '陪跑流程：開工到收工', slug: 'learn/bring-your-own/run-the-loop' },
+					],
+				},
+				{
+					label: '選讀',
+					items: [
+						{ label: '官方免費課程（Anthropic Academy）', slug: 'learn/anthropic-academy' },
 					],
 				},
 				{

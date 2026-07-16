@@ -1,5 +1,5 @@
 ---
-// 學習路徑主線標記（5 站）：讓讀者在每一課頂部都知道「我在第幾站、上一站下一站是什麼」。
+// 學習路徑主線標記（6 站）：讓讀者在每一課頂部都知道「我在第幾站、上一站下一站是什麼」。
 // 連結用 BASE_URL 組完整路徑——本元件被不同深度的頁面引用，相對路徑會斷（SPEC #1 base 坑）。
 const { step } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
@@ -9,11 +9,12 @@ const stations = [
 	{ n: 3, label: '第一個專案', href: `${base}/learn/first-project/` },
 	{ n: 4, label: '安心使用', href: `${base}/trust/where-does-data-go/` },
 	{ n: 5, label: '你的 CLAUDE.md', href: `${base}/learn/your-own-claude-md/` },
+	{ n: 6, label: '帶自己的專案上路', href: `${base}/learn/bring-your-own/` },
 ];
 ---
 
-<nav class="path-step" aria-label={`學習路徑：你在第 ${step} 站，共 5 站`}>
-	<span class="path-step__label">🚏 學習路徑 {step}/5</span>
+<nav class="path-step" aria-label={`學習路徑：你在第 ${step} 站，共 6 站`}>
+	<span class="path-step__label">🚏 學習路徑 {step}/6</span>
 	<ol>
 		{stations.map((s) =>
 			s.n === step ? (
