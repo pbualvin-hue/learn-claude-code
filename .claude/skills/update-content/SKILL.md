@@ -40,8 +40,13 @@ frontmatter 五欄必填（缺＝build fail）：`title`（例：「v2.1.208 →
 3. **受影響的本站頁面**：對照 14 個 reference 頁＋compare＋trust＋cheatsheet，列「頁面｜受影響條目｜建議修改」清單。只列有實據的，不硬湊。
 4. 「先備知識」與「下一步」導引（無死路原則）。
 
-### 4b. 掛側欄
-`astro.config.mjs`「版本更新」節：在「這區在做什麼」項目**之後**插入新頁（最新在上、由新到舊），label 用「v<起> → v<迄>」。側欄是顯式清單（不用 autogenerate），新頁不掛側欄＝讀者看不到。
+### 4b. 掛側欄（機械動作，用內建 Edit 工具）
+`astro.config.mjs` 的「版本更新」節有一行錨點註解 `// UPDATES-INSERT-POINT`。用 **Edit 工具**把該錨點行整行當 old_string，換成「新條目＋原錨點行」（縮排照抄錨點行的 tab）：
+```
+{ label: 'v<起> → v<迄>', slug: 'updates/<檔名去掉副檔名>' },
+// UPDATES-INSERT-POINT：…（原行照抄）
+```
+**檔案編輯一律用內建 Edit／Write 工具。禁止用 Bash 改寫檔案（python3 -c／sed -i／echo 重導向都不在允許清單，無人值守會吊死——2026-07-16 run3 實測踩過）。**新頁不掛側欄＝讀者看不到。
 
 ### 5. 強制複審觸發判定
 增量條目觸及 **hooks／skills／agents（subagents）／settings／權限** 任一者：
