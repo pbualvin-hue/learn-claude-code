@@ -1,12 +1,13 @@
 ---
 title: settings 與權限模式
 description: settings.json 存放哪些設定、權限規則怎麼運作，以及為什麼它是你真正能信賴的安全保險。
-base_version: '2.1.207'
+base_version: '2.1.210'
 sources:
   - https://docs.claude.com/en/docs/claude-code/settings
   - https://docs.claude.com/en/docs/claude-code/permissions
+  - https://code.claude.com/docs/en/permission-modes
 audience: both
-last_reviewed: 2026-07-13
+last_reviewed: 2026-07-16
 ---
 
 :::note[先備知識]
@@ -64,12 +65,21 @@ last_reviewed: 2026-07-13
 | `default`（介面上顯示為 Manual） | 標準行為：每種工具第一次使用都先問你 |
 | `acceptEdits` | 自動接受檔案編輯，以及 `mkdir`／`mv`／`cp` 這類常見檔案操作 |
 | `plan` | Claude 只讀檔案、跑唯讀指令做調查，不會真的動你的原始碼 |
+| `auto` | 幾乎不跳提示，但每個非唯讀動作先經過一個**獨立的安全分類器模型**審查——越權、可疑、破壞性的動作會被擋下 |
+| `dontAsk` | 反向邏輯：凡是本來要問你的動作一律**自動拒絕**，只有 allow 清單預先核准的工具能執行——給 CI 或鎖死環境用 |
 | `bypassPermissions` | 幾乎跳過所有提示（少數如刪除根目錄/家目錄的指令仍會攔） |
 
-`bypassPermissions` 風險最高：官方明確建議只在容器或 VM 這類「壞了也沒關係」的隔離環境用，一般開發專案不建議開啟。
+幾個模式的補充說明：
+
+- **`auto` vs `bypassPermissions` 一句話**：bypass 是「全部放行、沒人看著」；auto 是「放行前有另一個模型在看」。想少被打擾，官方建議優先考慮 auto，而不是 bypass。
+- `auto` 有可用條件（方案、模型、平台都有要求，詳見官方 permission-modes 頁）：模式選單裡沒看到它，通常是條件不符，不是壞掉。
+- 防守設計：`defaultMode: "auto"` 寫在專案層 `.claude/settings.json` 或 `settings.local.json` 會被**忽略**——repo 不能替自己打開 auto 模式；要開只能寫在你自己的 `~/.claude/settings.json`。
+- `dontAsk` 模式下，`ask` 規則命中的動作會被直接拒絕而不是詢問（這個模式從頭到尾不會收集任何回答）。
+- `bypassPermissions` 風險最高：官方明確建議只在容器或 VM 這類「壞了也沒關係」的隔離環境用，一般開發專案不建議開啟。
 
 ## 限制與注意
 
+- **帶路徑的規則只有 `Edit(路徑)` 與 `Read(路徑)` 兩種寫法**：官方文件明載「`Edit` 規則適用於所有會編輯檔案的內建工具」（含 Write）。自 v2.1.210 起，寫 `Write(路徑)`、`NotebookEdit(路徑)`、`Glob(路徑)` 這類規則會在啟動時收到警告——這些寫法的比對方式不同，官方指示一律改用 `Edit(路徑)`／`Read(路徑)`。
 - **權限規則擋的是 Claude Code 這個工具，不是 Claude 這個模型**：`CLAUDE.md` 裡寫「不要跑 `rm -rf`」只是建議，Claude 有可能沒照做；但 `permissions.deny` 裡寫的規則，是 Claude Code 直接不執行，兩者不能互相替代。
 - 用萬用字元限制 Bash 指令的參數其實很脆弱。官方文件直接點名這個坑：例如想寫一條規則只允許 curl 抓 GitHub 網址，`Bash(curl http://github.com/ *)` 這種寫法看似安全，實際上加個參數（`curl -X GET http://github.com/...`）、換個協定（`https://`）、或透過會轉址的短網址，都能繞過去。真的要限制對外連線，建議改用 deny 擋掉 `curl`／`wget`，改用 `WebFetch(domain:example.com)` 這種以網域為單位的規則。
 - 專案層 `.claude/settings.json` 裡的 `allow` 規則，要等你手動通過「workspace trust」的信任對話框才會真的生效——不是寫進檔案就立刻有效，這點常被誤會。`deny` 和 `ask` 規則不受此限制，因為它們只會限制、不會放行。

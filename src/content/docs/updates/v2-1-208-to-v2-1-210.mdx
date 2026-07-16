@@ -44,7 +44,7 @@ v2.1.208 到 v2.1.210 這三版，大部分條目是背景任務（`claude agent
 **日常使用有感**
 
 - ⚠️ **權限規則新警告**：如果你在 `settings.json` 的 `permissions` 裡寫過 `Write(path)`、`NotebookEdit(path)` 或 `Glob(path)` 這種寫法，啟動時會跳出警告——這幾個工具的權限比對方式跟 `Edit`／`Read` 不同，官方建議改寫成 `Edit(path)` 或 `Read(path)`。本站範例目前沒有用到這幾種寫法，但如果你自己寫過權限規則，值得檢查一次。
-- **skill／指令參數不會再被靜默吃掉**：以前呼叫 skill 或 slash command 時，如果帶的參數比 `$1`、`$2` 這類位置變數多或對不上，Claude Code 會直接把多的部分刪掉；這版修正後會原樣保留，不會憑空消失。
+- **skill／指令的參數佔位符不會再被靜默吃掉**：skill 或 slash command 內文裡寫了 `$1`、`$2` 這類位置佔位符、但呼叫時沒帶到對應參數時，這些佔位符以前會被靜默刪掉；這版修正後會原樣保留在文字裡，讓你一眼看出自己漏帶了參數。
 - **subagent 的 worktree 隔離修了一個資安相關 bug**：設定 `isolation: 'worktree'` 的 subagent，原本可能繞過隔離、直接對主 repo 跑會修改內容的 git 指令；修正後才真正符合「subagent 在自己的空間做事，不動到你的主目錄」這個設計初衷。同一版也加強了 Agent tool 對間接提示注入的防範（subagent 讀到的檔案內容裡如果藏了指令，不會被誤當成真正的指示執行）。
 - 無人值守（unattended）session 的一個卡住成因被修掉：hook 逾時之前會被誤判成「使用者拒絕」，導致排程或背景 session 停住等一個不會來的回覆；這版修正後逾時會正確回報成逾時。
 
@@ -59,7 +59,7 @@ v2.1.208 到 v2.1.210 這三版，大部分條目是背景任務（`claude agent
 | 頁面 | 受影響條目 | 建議修改 |
 | --- | --- | --- |
 | [settings 與權限模式](../../reference/settings-permissions/) | Write(path)／NotebookEdit(path)／Glob(path) 權限規則新警告（2.1.210） | 頁面目前沒有這幾種寫法的範例，不需訂正；可考慮日後補一句提醒，教讀者寫權限規則時直接用 Edit(path)/Read(path)，避開這個警告 |
-| [skills](../../reference/skills/) | `$1`／`$2` 位置參數不再被靜默吃掉（2.1.210） | 頁面第 48 行講解 `$ARGUMENTS`／`$0`／`$1` 語法本身沒有錯，可選擇性補一句：帶多餘或對不上的參數現在會原樣保留，不會被刪掉 |
+| [skills](../../reference/skills/) | `$1`／`$2` 佔位符不再被靜默吃掉（2.1.210） | 頁面講解 `$ARGUMENTS`／`$0`／`$1` 語法本身沒有錯，可選擇性補一句：沒對應到參數的佔位符現在會原樣保留，不會被刪掉 |
 | [subagents](../../reference/subagents/) | worktree 隔離資安修正＋Agent tool 防注入強化（2.1.210） | 頁面目前沒有提到 worktree 隔離保證，不算內容錯誤；資安相關條目，人工複核時建議確認是否要補一段「subagent 在隔離環境跑，不會動到你的主目錄」的說明 |
 
 ## ⚠️ 未驗證
