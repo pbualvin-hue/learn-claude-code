@@ -100,6 +100,7 @@ export default defineConfig({
 					label: '版本更新',
 					items: [
 						{ label: '這區在做什麼', slug: 'updates' },
+						{ label: 'v2.1.208 → v2.1.210', slug: 'updates/v2-1-208-to-v2-1-210' },
 						// UPDATES-INSERT-POINT：update-content skill 在本行「上方」插入新版本頁（最新在上），勿刪本行
 					],
 				},
