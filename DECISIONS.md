@@ -174,5 +174,14 @@
 - **使用者裁決（2026-07-15）**：① 工作順序＝先修順序（便宜迭代：側欄重排＋路徑標記＋首頁動線統一）→ Phase 3 照計畫 → 深度層立 Phase 2.5 於 Phase 3 之後規劃；② Phase 2.5 範圍＝陪跑章＋加深現有軌道＋加深功能參考頁進階段——**目的是讓親友讀者在認識功能後能快速進入實戰，彌合「我知道這些了，但我要做什麼」的斷層**；明確不含開發者軌道提前（非為使用者本人而做）。
 - 定位說明：此回饋即 Phase 2 完成標準懸而未決的「真人實走驗收」首份輸入，驗收抓出回修項屬機制正常運作。
 
+## 2026-07-15/16 Phase 3 執行發現：無人值守 run 的第二批閘門（過程紀錄）
+Phase 3 部署後連續實測，延續 Phase 0 三道啟動閘門（權限預核准／信任旗標／規則前綴），又收斂出四道新閘門，全數已修入 skill 與允許清單：
+4. **裸 Bash 文字指令**（run1，14:10）：權限/信任/規則三關全過、build＋check-links 無人值守通過，但 runner 在內容掃描步驟用 `grep`（不在允許清單）→ 吊死。修法：SKILL 明令掃描用內建 Grep 工具＋允許清單補 `Bash(grep*)` 保險。
+5. **5 分鐘硬時限**（run2，22:05）：一路全過、commit 完成，在 spawn＋整 5 分鐘被無警告終止，`git push` 沒送出。run1 亦符合「spawn＋5:00 被殺」。修法：SKILL 改 **PR-first 順序**——內容寫完立刻 commit＋push＋開 draft PR，build/check-links 移到 PR 之後、結果用 `gh pr comment` 補報；PR 檢查清單常設「若無驗證留言＝run 被截斷，審核者自行補跑」項。
+6. **Edit 工具失手就繞去 Bash 改檔**（run3，00:40）：runner 改側欄的 Edit 比對失敗（tab 縮排），改用 `python3 -c` 重寫檔案（不在允許清單）→ 吊死。修法：astro.config.mjs 版本更新節加 `// UPDATES-INSERT-POINT` 錨點行，插入變成單次 Edit 的機械動作；SKILL 明令禁止 Bash 改檔（python3／sed -i／echo 重導向）。
+7. **觸發本身也會靜默不發生**（run4，14:15 排定）：任務到時未觸發（App 非活躍時排程不跑，下次啟動補跑）。「主動查」的範圍從「查結果」擴大到「查有沒有觸發」——lastRunAt 為空＝根本沒跑，別在結果端白等。
+- 另實測確認：排程 runner 與主對話**共用同一個工作目錄**——runner 開分支時主對話的未 commit 變更會被帶走、主對話也可能干擾 runner。紀律：排程觸發時段主對話保持乾淨樹；反向亦然（審核 PR 前先確認 runner 已死透）。
+- 內容時效查證（2026-07-15 WebFetch 官方全文）：permission-modes 頁現為六模式（default/acceptEdits/plan/auto/dontAsk/bypassPermissions）；permissions 頁明載「Edit 規則適用於所有會編輯檔案的內建工具」、v2.1.210 起 `Write(path)`/`NotebookEdit(path)`/`Glob(path)` 規則形態啟動時警告。settings-permissions 頁補丁已擬（scratchpad），待 draft PR 開出後上同一分支。
+
 ## 翻案紀錄
 （無）
