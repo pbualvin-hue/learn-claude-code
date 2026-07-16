@@ -122,7 +122,12 @@ C. 驗收：PLAN Phase 1 完成標準逐項附證據＋merge 前黃金抽查
 - 一次真實新版 release 走完全流程：偵測 → 草稿 PR → 你審核（目標 ≤10 分鐘）→ merge → 網站自動更新且 footer 版本號跳新
 - 排程失敗時 footer 日期停滯可肉眼發現（不靜默）
 
-## Phase 4（選配）— 開發者軌道＋整合練習
+### Phase 3 執行判定（2026-07-16）— 實作項全落地；完成標準一項待使用者 merge、一項綁週日真實 run 終驗收
+- 實作項：updates/ 區＋導覽頁 ✓｜`/update-content` skill（SPEC #7 契約＋PR-first 時限對策＋工具紀律＋側欄錨點）✓｜週日 21:00 排程（jitter ~5 分鐘）✓｜cheatsheet 單頁速查（官方三頁逐條驗證＋黃金抽查 3 條全過）＋列印 CSS ✓。
+- 完成標準 1（真實新版走完全流程）：draft PR #1（v2.1.208→210 解讀＋settings 頁補 auto/dontAsk——KICKOFF #4 待辦結清）已由無人值守 run 產草稿、主對話審核修正、本地驗證全過。**待使用者審核 merge**，merge 後驗 footer 跳 2.1.210。
+- 完成標準 2（footer 日期停滯可肉眼發現）：footer 讀狀態檔機制既有 ✓。
+- 追加標準（無人值守 run 全通）：**部分達成**——run2 無人值守完成「抓增量→草稿→掛側欄→狀態檔→build→check-links→commit」（Phase 0 三道閘門全數通過），push＋開 PR 被 5 分鐘硬時限截斷；四道新閘門（裸 Bash 文字指令／5 分鐘時限／Edit 繞道改檔／觸發靜默不發生）已全數修入 skill 與允許清單（DECISIONS 2026-07-15/16）。終驗收綁 2026-07-19（日）21:04 首次真實週排程 run：屆時主動查（任務 lastRunAt → runner transcript → PR），毋須另排人工測試窗口。
+- 已知風險紀錄：排程 runner 與主對話共用工作目錄（排程時段主對話保持乾淨樹）；一次性測試任務在 App 非活躍時不觸發、且被中斷的 runner session 可能在 App 甦醒時復活續跑（處置：發現殭屍 session 在 App 中關閉/封存，其 prompt 鐵律禁碰 main，破壞面有限）。
 - 「第二條專案軌道」（開發者向）：從專案需求出發自建 skills／tools／MCP／外掛的教學（通用規範設計、個人習慣沉澱、自訂 agents/skills/rules；全部過去識別化檢查清單）
 - 練習專案 repo：刻意設計的小 repo（含小 bug、缺文件、缺測試），課程引導學習者 clone 後用 Claude Code 實戰（修 bug→寫測試→開 PR）；練習步驟寫成目標導向而非逐鍵操作（降低過時率），repo 亦標 base_version
 - 互動式 CLAUDE.md 產生器：純前端問答表單（雙讀者問題組）→ 即時組出可複製的起步版 CLAUDE.md；不傳送、不儲存任何輸入（隱私），輸出上限刻意壓在 10 條內（防大而全反模式）
