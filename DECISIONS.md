@@ -183,5 +183,11 @@ Phase 3 部署後連續實測，延續 Phase 0 三道啟動閘門（權限預核
 - 另實測確認：排程 runner 與主對話**共用同一個工作目錄**——runner 開分支時主對話的未 commit 變更會被帶走、主對話也可能干擾 runner。紀律：排程觸發時段主對話保持乾淨樹；反向亦然（審核 PR 前先確認 runner 已死透）。
 - 內容時效查證（2026-07-15 WebFetch 官方全文）：permission-modes 頁現為六模式（default/acceptEdits/plan/auto/dontAsk/bypassPermissions）；permissions 頁明載「Edit 規則適用於所有會編輯檔案的內建工具」、v2.1.210 起 `Write(path)`/`NotebookEdit(path)`/`Glob(path)` 規則形態啟動時警告。settings-permissions 頁補丁已擬（scratchpad），待 draft PR 開出後上同一分支。
 
+## 2026-07-17 Phase 2.5 執行（第 12 輪裁決的落實，過程紀錄）
+- 三批次（陪跑章／軌道加深／參考頁進階）當日完成上線，判定見 PLAN「Phase 2.5」節。主線定稿為 6 站，PR #1（v2.1.208→210＋settings 頁 auto/dontAsk）已由使用者親自抽查後 merge，footer 實測跳 v2.1.210。
+- 委派品質觀察：批次二、三的草稿 agent 兩度依官方文件**糾正主對話 brief 的過時假設**（「不再問」效期依動作類型而異：Bash 永久／檔案編輯僅本次對話；MCP tool search 使未用連接器僅佔少量 context）——「brief 給方向、agent 查證後可推翻細節」是有效的正確性機制，日後 brief 一律保留「查不到寧可不寫」條款。
+- 使用者審核回饋升格：黃金抽查需「兩邊都能搜到的錨點」——已修入 update-content skill 的 PR body 模板（抽查錨點節＋找不出錨點的條目必標未驗證或刪除）。
+- 懸置項狀態：無人值守終驗收＝2026-07-19（日）21:04 首次真實週排程 run（主動查：任務 lastRunAt→transcript→PR）；真人親友驗收＝Phase 2.5 內容齊備後可安排。
+
 ## 翻案紀錄
 （無）
