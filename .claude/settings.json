@@ -39,10 +39,8 @@
       "PowerShell(node scripts/check-links.mjs*)",
       "Bash(grep*)",
       "Edit(src/content/docs/updates/**)",
-      "Write(src/content/docs/updates/**)",
       "Edit(src/data/content-state.json)",
       "Edit(astro.config.mjs)",
-      "Write(_experimental/**)",
       "Edit(_experimental/**)"
     ]
   }

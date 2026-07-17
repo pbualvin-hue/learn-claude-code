@@ -6,28 +6,31 @@
 
 請先依序讀：CLAUDE.md → PLAN.md → SPEC.md → DECISIONS.md。
 Non-Negotiables 優先於你的預設判斷；要改任何一條先提出討論，不要默默偏離。
-實作細節一律以 SPEC.md 為準（規劃已凍結、無待填變數）；SPEC 沒寫到的情況＝計畫外情況，先回文件討論再動工，不要自訂預設方案——能問使用者的就用選項式問題直接問。
+實作細節以 SPEC.md 為準；SPEC 沒寫到的先回文件討論再動工——能問使用者的就用選項式問題直接問。
 
-執行順序（硬規則）：
-1. Phase 0 逐項執行並回報（通過／失敗＋證據：指令輸出、網址、截圖）。任一項失敗，先解決或回文件討論，不進 Phase 1。
-2. Phase 0 全過後，提出 Phase 1 的檔案級 todo 清單讓我確認，確認後才動工。
-3. Phase 1 完成後逐項對照 PLAN.md 完成標準驗收（附證據），通過才算完成——Phase 之間是硬閘門，不跨 Phase 順便做。
+## 現況（2026-07-17 收尾）
+- **Phase 0–3 與 Phase 2.5 全部完成**，站上線 38 頁：https://pbualvin-hue.github.io/learn-claude-code/
+- 學習路徑主線 6 站（①啟動 ②怎麼說話 ③第一個專案[A軌7站/B軌8站] ④安心使用 ⑤CLAUDE.md ⑥帶自己的專案上路），每頁有 PathStep 標記；首頁／側欄／頁尾導引同一條動線。
+- 更新管線運轉中：`/update-content` skill（PR-first 設計）＋週日 21:04 排程；首次真實循環已全程走通（PR #1 merged，footer 基準 v2.1.210）。
+- 5 個高頻參考頁（settings-permissions/hooks/skills/subagents/mcp）已有「實戰進階」節。
 
-工作規則：
-- 內容草稿屬長內容處理：委派 agent 產出，不在主對話直接跑（全域十二區）。
-- 內容頁一律附 frontmatter base_version 與 sources；查不到官方依據的描述標「⚠ 未驗證」。
-- 計畫外情況（工具行為不如預期、發現新風險）：先回 PLAN.md／DECISIONS.md 迭代文件，再改程式。
-- 每個 Phase 開新 session，交接只靠這四份文件，不依賴對話記憶。
-- repo 為 public（CLAUDE.md #8）；git push 前仍需向我確認（全域六）。
+## 懸置中的驗收（不需動工，到時查核）
+1. **無人值守終驗收**：每週日 21:04 排程 run。查核方式（通知不可靠，主動查）：任務 lastRunAt（scheduled-tasks 工具）→ 若空＝沒觸發（App 當時沒開，下次啟動補跑）；有跑 → `gh pr list` 看 content/update-* draft PR 或 runner transcript（~/.claude/projects/<專案>/ 最新 .jsonl）看回報。七道靜默失敗閘門清單見 DECISIONS 2026-07-13 與 07-15/16 節＋專案記憶。
+2. **真人親友驗收**（PLAN Phase 2 完成標準，使用者安排）：照入門篇實走 30 分鐘不求助＋寫出 3 條自己的規則＋走完一條軌道。
+3. **停損閘門第 4 週檢查點**：已排 2026-08-10 20:00 一次性提醒任務（stop-loss-week4-checkpoint），會自動產出檢查報告供使用者裁決。
 
-現在執行 Phase 3（Phase 0、1、2 已完成）。
+## 下次開發主題（使用者 2026-07-17 裁決順序）
+按優先序：
+1. 其餘 **9 個參考頁**的「實戰進階」第二批（what-is/install/conversation-basics/slash-commands/built-in-tools/claude-md-memory/background-tasks-scheduling/claude-directory/faq）——建議先等真人驗收回饋再定調深淺。
+2. getting-started **真實終端機截圖**替換手繪示意圖（需使用者提供截圖，標注擷取版本）。
+3. sources 網域標準化評估（docs.claude.com → code.claude.com，目前轉址正常、低優先）。
+4. 詳盡版 MentalModel 全景圖元件掛載（放進某課「想看完整全貌」摺疊區，選配）。
+另：親友驗收若有回饋，回修優先於上述所有項目（驗收發現的問題最值錢）。
 
-Phase 2 完成判定見 PLAN.md「Phase 2 完成判定」節；執行發現見 DECISIONS.md「2026-07-13／07-14」各節。
-重點交接（Phase 3 動工前先知道）：
-1. 站已上線且內容完整：https://pbualvin-hue.github.io/learn-claude-code/ ——首頁（雙入口＋簡圖＋4 風格切換器）＋開始使用／第一個專案／安心使用（trust）／功能參考（14）／比較與情境（compare・scenarios・troubleshooting）／詞彙表，共 33 頁、連結零死鏈。**Phase 2 唯一未結項＝真人親友驗收（PLAN Phase 2 完成標準，需使用者安排）**。
-2. Phase 3 範圍＝updates/ 區＋`/update-content` skill（讀 changelog 自 `content-state.json` 的 last_covered_version 增量→產 updates 草稿＋受影響 reference 頁清單→開 draft PR）＋週日 21:00 排程＋單頁 cheatsheet。契約見 SPEC #7；changelog 涉及 hooks/skills/agents/settings/權限 時，草稿**必含決策比較頁（compare）複審結果**（融會貫通層最易過時）。
-3. **無人值守排程的三道啟動閘門（DECISIONS 2026-07-13，Phase 3 部署必踩）**：① 工具權限——排程任務建立後先「Run now」預核准（git/gh/curl），或用 .claude/settings.json 允許清單（已備）；② 資料夾信任旗標——~/.claude.json 的 hasTrustDialogAccepted 可能被 App 回寫還原，排程靜默跳過時第一個查這裡；③ 允許規則前綴比對對旗標敏感（curl -s/-sL 變體已補）。notifyOnCompletion 通知不可靠，排程結果要主動查。Phase 3 完成標準追加：部署後實測一次無人值守 run 全通。
-4. **內容時效訊號（Phase 3 複審時處理）**：官方 permission-modes 頁已多出 `auto`（分類器）、`dontAsk`（CI）等新模式，本站 reference/settings-permissions（base 2.1.207）只列四種——複審 settings/決策頁時評估補上。官方文件網域已遷 code.claude.com（sources 仍寫 docs.claude.com 自動轉址）；changelog 仍在 raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md（未遷）。
-5. **既有機制沿用**：frontmatter schema 鎖死（src/content.config.ts，缺欄位 build fail）；內容草稿走「委派 agent 產出、主對話審核」，資安頁必抽（CLAUDE.md 五）；批次產文後一律跑 `node scripts/check-links.mjs`（集中連結稽核，已抓過多次 agent 自算深度錯誤）＋掃 `<!--`／`</content>`／簡繁；內部連結相對路徑（depth 對應 `../` 層數），手寫 base 前綴只用在 index.mdx hero.actions。
-6. **維護負擔提醒**：4 風格皮膚（skins.css）＋風格切換器是超出原 SPEC 的使用者主導功能，每皮膚 ×深/淺色×手機需維持可讀；站越大越要顧。停損閘門觸發時列可砍範圍。
-git push 沿全域規則需向使用者確認（可開工時徵求本 Phase 一次性授權）。Phase 3 動工前先提檔案級 todo 清單讓使用者確認。
+## 工作規則（沿用）
+- 內容草稿委派 agent 產出、主對話審核；資安相關頁必抽全讀；brief 附「查不到寧可不寫」條款（agent 曾兩度用官方文件糾正 brief 的過時假設，這是機制不是意外）。
+- 批次收尾固定關卡：`npm run build`＋`node scripts/check-links.mjs`（零白名單）＋掃 `<!--`／`</content>`／簡繁。
+- 內容頁 frontmatter 五欄必填（zod 強制）；查不到官方依據標「⚠ 未驗證」；黃金抽查用「兩邊都能 Ctrl+F 到的英文術語錨點」。
+- 內部連結相對路徑（注意 index 頁與非 index 頁深度差一層）；astro.config.mjs 側欄「版本更新」節有 `// UPDATES-INSERT-POINT` 錨點。
+- 排程 runner 與主對話共用工作目錄：排程時段主對話保持乾淨樹。
+- repo public；git push 需向使用者確認（可開工時徵求該輪一次性授權）。
