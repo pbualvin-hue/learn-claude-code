@@ -8,7 +8,7 @@ sources:
   - https://docs.claude.com/en/docs/claude-code/agent-view
   - https://docs.claude.com/en/docs/claude-code/headless
 audience: dev
-last_reviewed: 2026-07-13
+last_reviewed: 2026-07-17
 ---
 
 :::note[先備知識]
@@ -62,6 +62,57 @@ cat build-error.txt | claude -p "concisely explain the root cause of this build 
 ```
 
 加 `--output-format json` 可以拿到結構化的結果（含花費、session ID），方便程式解析而不是用眼睛讀。這是把 Claude Code 接進「排程系統」的常見做法——例如搭配 GitHub Actions 的 schedule trigger，讓 CI 平台每天固定時間呼叫一次 `claude -p`，這種用法在官方文件中被歸類為 GitHub Actions／GitLab CI 整合，不是本頁介紹的三種排程機制之一。
+
+## 🛠️ 實戰進階
+
+### 範例一：一次性提醒不用 `/loop`，直接講需求就好
+
+`/loop` 是設計來「重複執行」的；如果你要的只是「提醒我一次」，不需要繞去用 `/loop` 再手動 `Esc` 停掉，直接用自然語言講，Claude 會建立一個單次觸發、跑完自動刪除的排程：
+
+```text
+remind me at 3pm to push the release branch
+```
+
+```text
+in 45 minutes, check whether the integration tests passed
+```
+
+底層跟 `/loop` 用的是同一套 cron 工具（`CronCreate`），差別只在建立時標成「單次」還是「重複」；單次的那個跑完就自我刪除，不會留著佔用你這個 session 最多 50 個排程任務的額度。
+
+### 範例二：同一件事，session 內用 `/loop`、常駐用 Routines
+
+情境：你想每天早上固定巡一次 PR review。如果只是今天這個 session 開著時盯著看，`/loop` 就夠：
+
+```text
+/loop check whether CI passed and address any review comments
+```
+
+但這種「每天都要」的巡檢，電腦關機、終端機沒開就會斷——這時該換成 Routines 的排程觸發，在 CLI 打自然語言就能建立：
+
+```text
+/schedule daily PR review at 9am
+```
+
+要注意 `/schedule` 在 CLI 目前**只能建立「排程觸發」的 Routine**；如果這個 Routine 還要加「收到 API 呼叫就跑」或「GitHub 開新 PR 就跑」，CLI 建不了，要到 [claude.ai/code/routines](https://claude.ai/code/routines) 網頁版的編輯畫面手動加 trigger。三種事件觸發情境對應：
+
+- **一次性提醒**（現在跟你講一次就好）→ 直接自然語言講需求，Claude 自動建單次 cron，不用 `/loop`、也不用 Routines。
+- **週期性任務**（每天/每小時固定跑，但只在你這個 session 開著時需要）→ `/loop <interval> <prompt>`。
+- **週期性任務，但要電腦關機也照跑**→ Routines 的排程觸發（`/schedule` 或網頁）。
+- **事件觸發**（收到 GitHub PR、收到 webhook）→ 只有 Routines 支援，且 GitHub 事件觸發只能在網頁版設定（要先裝 Claude GitHub App）。
+
+### 跟相鄰機制的邊界
+
+- **背景任務（`/background`）**：你手動起頭的一次性長工作，做完就結束，不會自己重複執行；適合「這件事現在交給你去忙，我先做別的」。
+- **[subagent](../subagents/)**：同一個 session 裡委派出去的子任務，做完把摘要交回主對話，不是獨立跑的 session，也不會自己定時觸發。
+- **排程（`/loop` / Desktop / Routines）**：不需要你手動起頭，靠時間或事件自動觸發；三者之間再依「電腦要不要開著」「session 要不要開著」「要不要離開本機獨立跑」來選，見前面的比較表。
+
+三者常見的正確組合：先用 `/loop` 在 session 裡試跑一個巡檢 prompt，調到滿意的行為後，再把同一段邏輯搬進 Routines 的排程觸發做成長期運作——`/loop` 適合當 Routines 上線前的「草稿測試場」。
+
+### 常見誤用
+
+- **把關鍵流程整個綁在 Routines 的 API 或 GitHub trigger 上**：Routines 官方明講是 **research preview**，`/fire` endpoint 目前掛在會變動的 beta header（`experimental-cc-routine-2026-04-01`）下，request／response 格式都可能改版。拿它接生產環境的部署驗證這類「一旦斷了不會有人發現」的流程時，至少要留一道獨立於 Routines 之外的監控或人工複查，不要假設它會一直穩定跑下去。
+- **忘記 `/loop` 排的是 7 天到期的鬧鐘，不是永久排程**：建立時官方不會主動提醒你「這個 7 天後會消失」，只有在你回頭查、或它突然沒再觸發時才會發現。真的需要跨週持續巡檢，建立當下就該直接選 Routines，而不是先用 `/loop` 頂著、等它某天悄悄停跑才想起來要換。
+- **排程呼叫 skill，卻忘記 skill 的可觸發設定**：`/loop 20m /review-pr 1234` 這種帶 skill 的排程，觸發時若該 skill 標了 `disable-model-invocation: true`、或被 `skillOverrides`／`Skill` deny 規則擋掉，排程觸發的當下不會真的執行 skill，只會把那行文字當普通訊息丟給 Claude——排程照樣「有跑」，但沒做到你要的事，這種失敗不會報錯，只會是「做的事不對」。
 
 ## 限制與注意
 

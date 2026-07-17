@@ -5,8 +5,9 @@ base_version: '2.1.207'
 sources:
   - https://docs.claude.com/en/docs/claude-code/slash-commands
   - https://docs.claude.com/en/docs/claude-code/commands
+  - https://docs.claude.com/en/docs/claude-code/skills
 audience: both
-last_reviewed: 2026-07-13
+last_reviewed: 2026-07-17
 ---
 
 :::note[先備知識]
@@ -48,6 +49,59 @@ Claude 收到時會把該檔案的內容當成給它的指示去執行。
 官方目前把這套機制併進了更完整的 **skills** 系統：一個技能是 `.claude/skills/<name>/SKILL.md`，效果跟
 `.claude/commands/<name>.md` 一樣會產生 `/name` 指令，但額外支援放附加檔案、控制「誰可以觸發」（你自己打、還是
 Claude 自動判斷要不要用）、傳參數等進階功能。舊的 `.claude/commands/` 檔案目前仍然可以正常運作，不會突然失效。
+
+## 🛠️ 實戰進階
+
+### 範例一：`.claude/commands/` 單一檔案——`argument-hint` ＋ `$ARGUMENTS` ＋ 內嵌 bash
+
+自訂 command 檔案跟 skill 支援同一套 frontmatter 欄位，只是少了資料夾、不能放附加檔案，指令名稱固定來自檔名（`name` 欄位在這裡不會生效）。
+
+```markdown title=".claude/commands/pr-review.md"
+---
+description: 審查指定 PR 編號的改動，先抓即時 diff 再看
+argument-hint: [pr-number]
+allowed-tools: Bash(gh pr diff *)
+---
+
+## PR diff
+!`gh pr diff $ARGUMENTS`
+
+## 你的任務
+根據上面的 diff 審查這個 PR：檢查有沒有明顯的錯誤處理疏漏、安全疑慮，或跟專案慣例不符的地方，列出重點，不用逐行講。
+```
+
+打 `/pr-review 123` 時，Claude Code 會先在背景執行 `` !`gh pr diff $ARGUMENTS` ``（`$ARGUMENTS` 被換成你打的 `123`），把指令的輸出結果直接取代那一行文字，Claude 收到的是已經含有真實 diff 內容的完整訊息——這一步是 Claude Code 自己做的前置處理，不是 Claude 主動去執行了一個工具。`` !`command` `` 只有在**行首、或緊接在空白字元之後**才會被辨識，寫在字串中間（例如把它接在 `KEY=` 後面）不會執行，只會留下字面文字。
+
+`argument-hint` 只是打 `/pr-review` 時自動完成選單顯示的提示文字，不會限制你實際能輸入什麼；`allowed-tools` 讓這個指令觸發的**當輪**不用為 `gh pr diff` 跳出權限詢問，這個授權只在那一輪有效，下一則訊息就失效，不是永久放行。
+
+### 範例二：具名參數——`arguments` 對應 `$name`
+
+呼叫指令時常常有多個位置參數，用 `$0`、`$1` 記位置容易搞混，可以用 `arguments` frontmatter 給每個位置一個名字：
+
+```markdown title=".claude/commands/migrate-component.md"
+---
+description: 把一個元件從一個框架搬到另一個框架，保留行為與測試
+argument-hint: [component] [from] [to]
+arguments: [component, from, to]
+disable-model-invocation: true
+---
+
+把 $component 元件從 $from 搬到 $to，維持原有行為與測試不變。
+```
+
+打 `/migrate-component SearchBar React Vue`，`$component` 換成 `SearchBar`、`$from` 換成 `React`、`$to` 換成 `Vue`。`disable-model-invocation: true` 代表這個指令只有你能用 `/migrate-component` 手動觸發，Claude 不會自己判斷「現在該搬元件了」就自動執行——這是有副作用操作（搬檔案、改程式）該有的保險。
+
+### 跟相鄰機制的邊界
+
+- **slash command（自訂指令）**：你會重複輸入的具體單一行動（審查 PR、搬元件、產生 commit message），主動觸發（你自己打 `/name`，或讓 Claude 依情境判斷要不要用）。
+- **[hooks](../hooks/)**：不管你想不想觸發，特定事件一發生就強制執行，不需要誰主動叫它——差別是「你/Claude 主動選擇要不要做」跟「規定動作、沒得選」。同一件事兩者都能做時（例如「commit 前先跑 lint」），如果你希望「有時候手動叫」就用 command／skill，如果是「每次都不能漏」就用 hook。
+- **[CLAUDE.md](../claude-md-memory/)**：背景知識與偏好，每次對話都跟著載入，Claude 自己判斷要不要參考，沒有「執行」的概念。
+- **[skills](../skills/)**：跟自訂 command 是同一件事的完整版，多了資料夾（可放附加檔案）、`context: fork`（丟給獨立 subagent 執行）等進階功能；同名時 skill 會蓋過 `.claude/commands/` 裡的檔案。
+
+### 常見誤用
+
+- **有副作用的操作沒加 `disable-model-invocation: true`**：deploy、送出訊息、寫入外部服務這類指令，如果沒加這個欄位，Claude 判斷「時機看起來到了」就可能自己觸發——凡是你想自己掌控時機的動作，這個欄位不是可有可無的細節。
+- **以為 `.claude/commands/*.md` 是閹割版、不支援進階 frontmatter**：其實 `argument-hint`、`allowed-tools`、`disable-model-invocation` 等欄位跟 skill 完全共用，差別只在沒有資料夾放附加檔案、也不能用 `name` 欄位改變指令名稱（指令名固定來自檔名）。
 
 ## 限制與注意
 

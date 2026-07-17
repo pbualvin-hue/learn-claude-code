@@ -189,5 +189,12 @@ Phase 3 部署後連續實測，延續 Phase 0 三道啟動閘門（權限預核
 - 使用者審核回饋升格：黃金抽查需「兩邊都能搜到的錨點」——已修入 update-content skill 的 PR body 模板（抽查錨點節＋找不出錨點的條目必標未驗證或刪除）。
 - 懸置項狀態：無人值守終驗收＝2026-07-19（日）21:04 首次真實週排程 run（主動查：任務 lastRunAt→transcript→PR）；真人親友驗收＝Phase 2.5 內容齊備後可安排。
 
+## 2026-07-17 參考頁「實戰進階」第二批（KICKOFF 下次開發主題項目 1 的落實）
+使用者裁決先做深淺度評估、不齊頭 9 頁全補。判準：機制類頁（有具體語法、進階玩法、跟鄰近機制的邊界可談）才補「🛠️ 實戰進階」，intro／概念類頁（性質是「認識/查詢」而非「機制設定」）維持現狀。
+- 挑出 5 頁：slash-commands／built-in-tools／claude-md-memory／background-tasks-scheduling／claude-directory，5 個 docs-writer agent 平行產出、主對話審核；跳過 what-is-claude-code／install／conversation-basics／faq。
+- 委派品質：5 個 agent 皆先 WebFetch 官方頁查證才動筆（`docs.claude.com` 全數已 301 到 `code.claude.com`，內容仍可正常抓取，故 sources 未改）。多項舊內容被查證出「沒錯但不完整」，補進新節而非改寫舊段落，僅一處主對話事後判定需訂正：`claude-directory.mdx` 舊段落簡化寫「專案層優先於使用者層」，實際優先序為 `Managed ＞ 命令列參數 ＞ Local ＞ Project ＞ User`（`settings.local.json` 優先度高於團隊共用 `settings.json`，反直覺）——使用者裁決訂正舊段落而非維持簡化版，已修正。
+- 其他查證發現的重要新資訊（無需訂正舊內容，已於新節補上）：`/context`／`/memory`／`/status`／`/doctor` 四個除錯指令的分工；`@import` 巢狀匯入最深 4 層、跨 worktree 不共用 `CLAUDE.local.md`；`Tool(參數名:值)` 較新的權限規則比對語法；一次性提醒該用自然語言而非 `/loop`；排程呼叫 skill 若被 deny 規則擋住不會報錯、只是靜默不執行。
+- 驗收：build 38 頁 ✓、`check-links.mjs` 零死鏈 ✓、5 頁掃描無 `<!--`／`</content>`／簡體字殘留 ✓。
+
 ## 翻案紀錄
 （無）

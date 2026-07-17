@@ -5,7 +5,7 @@ base_version: '2.1.207'
 sources:
   - https://docs.claude.com/en/docs/claude-code/memory
 audience: both
-last_reviewed: 2026-07-13
+last_reviewed: 2026-07-17
 ---
 
 :::note[先備知識]
@@ -48,6 +48,61 @@ last_reviewed: 2026-07-13
 ### 想在多份檔案間共用內容
 
 `CLAUDE.md` 支援 `@path/to/file` 語法匯入其他檔案，例如 `@README` 會把 README 的內容也載進 context（若只是想在文字裡提到檔名而不匯入，用反引號包住即可，例如 `` `@README` ``）。如果專案已經有 `AGENTS.md` 給其他工具用，可以在 `CLAUDE.md` 裡用 `@AGENTS.md` 匯入，避免兩邊維護重複內容。
+
+## 🛠️ 實戰進階
+
+### 範例一：跨檔案共用內容，同時控制匯入深度
+
+團隊常見情境：專案已經有給其他 AI 工具看的 `AGENTS.md`，不想兩邊維護重複規則，又想在 `CLAUDE.md` 補一些 Claude 專屬指示：
+
+```markdown title="CLAUDE.md"
+@AGENTS.md
+
+## Claude 專屬指示
+- `src/billing/` 底下的變更一律先進 plan mode 再動手
+```
+
+Claude 會先載入 `AGENTS.md` 的內容，再接著讀後面 `## Claude 專屬指示` 這段。若不想額外開一個檔案，也可以用符號連結（`ln -s AGENTS.md CLAUDE.md`）讓兩個檔名指向同一份內容；不過 Windows 上建立符號連結需要系統管理員權限或開發者模式，實務上大多數情況用 `@import` 更省事。
+
+`@import` 支援巢狀：被匯入的檔案裡如果又寫了 `@其他檔案`，Claude 會繼續展開，最深展開 **4 層**；相對路徑是相對「引用它的那個檔案」解析，不是相對你目前的工作目錄，跨資料夾 `@import` 時要注意這點，容易找錯檔。
+
+另一個實務技巧：如果你同時開多個 git worktree，`CLAUDE.local.md` 只存在於建立它的那個 worktree，不會自動出現在別的 worktree。要讓個人偏好跨 worktree 共用，改成從家目錄匯入：
+
+```markdown title="CLAUDE.md"
+# Individual Preferences
+- @~/.claude/my-project-instructions.md
+```
+
+第一次在專案裡遇到「外部匯入」（匯入路徑跑到專案目錄之外，例如上面這個 `~/.claude/...`）時，Claude Code 會跳出一次核准對話框列出要匯入的檔案；按下拒絕之後，這個匯入就會保持關閉，不會再跳出來問——想重新啟用要自己去調整設定，不是下次對話會再問一次。
+
+### 範例二：用 `/context` 和 `/memory` 確認規則真的被載入
+
+規則沒被遵守時，第一步不是懷疑 Claude「不聽話」，而是先確認規則有沒有真的進到 context 裡：
+
+```
+/context
+```
+
+`/context` 會列出這次對話實際載入了哪些 `CLAUDE.md`／`CLAUDE.local.md`，如果你以為存在的某層檔案沒出現在清單裡，代表 Claude 根本沒看到它——常見原因是檔案放錯層級（例如放進子目錄，子目錄的 `CLAUDE.md` 要等 Claude 讀該目錄下的檔案時才會載入，不是啟動時就讀）。
+
+```
+/memory
+```
+
+`/memory` 用來瀏覽、打開你所有層級的 `CLAUDE.md`／`CLAUDE.local.md`，也可以切換 auto memory 開關、開啟 auto memory 資料夾看 Claude 自己寫了什麼筆記。簡單分工：**`/context` 用來確認「這次對話載入了什麼」，`/memory` 用來瀏覽和編輯「有哪些檔案存在」**。
+
+若要更細追查是哪個規則檔在哪個時機被載入（例如懷疑某條 `.claude/rules/` 路徑規則沒生效），可以掛 `InstructionsLoaded` hook 把每次載入的檔案記錄下來，這是官方文件建議的除錯手段（進階用法，日常排查通常 `/context` 就夠用）。
+
+### 跟相鄰機制的邊界
+
+- **CLAUDE.md**：你寫的建議，Claude 會盡量照做，但終究是它自己判斷要不要遵守，沒有強制力；適合「規範、慣例、專案架構說明」這類「照做通常沒問題、少數情況需要彈性」的內容。
+- **[hooks](../hooks/)**：保證執行，不管 Claude 當下怎麼判斷都會跑；「這件事無論如何都要發生」（例如每次 commit 前一定要跑 lint、危險指令一定要擋下）才該用 hook，寫進 CLAUDE.md 只能算「拜託」。
+- **auto memory**：Claude 自己觀察你的修正寫下的筆記，不是你手寫的規則；適合「Claude 從錯誤中學到的事」（除錯技巧、build 指令細節、你隨口糾正過的偏好），你不用手動維護，但也因此不受你直接控制內容怎麼寫。真的希望某件事被穩定記住、措辭精準，還是手動寫進 CLAUDE.md 比較可靠。
+
+### 常見誤用
+
+- **把「一定要做到」的事寫進 CLAUDE.md，期待 100% 遵守**：CLAUDE.md 是 context，不是強制設定，兩份規則互相矛盾時 Claude 可能隨機選一份照做。真正要擋下動作或保證某件事發生，交給 [hooks](../hooks/) 或權限規則，不是加大字體、加驚嘆號寫進 CLAUDE.md。
+- **以為拆成多個 `@import` 檔案可以省 context 額度**：拆檔案方便的是「維護組織」——分主題管理、方便多人協作——但所有被匯入的檔案在啟動時一樣會整份載入 context，並不會因為拆開就變輕。真正想省 context，要靠[路徑限定規則](../claude-directory/)（只在碰到特定檔案類型時才載入）或直接刪減內容，而不是分檔案。
 
 ## 限制與注意
 

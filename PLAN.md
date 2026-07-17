@@ -134,6 +134,7 @@ C. 驗收：PLAN Phase 1 完成標準逐項附證據＋merge 前黃金抽查
 - 批次一 陪跑章：主線擴為 6 站——新增 learn/bring-your-own/（挑對第一個真實專案：三判準＋點子＋開工三檢查）與 run-the-loop（開工話術→中途小循環→卡關對照表→收工驗收→沉澱）；PathStep/首頁/側欄/next-step-map/CLAUDE.md 課動線全數接上；承諾邊界維持誠實（保證流程、不保證結果，守第 8 輪決定）。
 - 批次二 軌道加深：A 軌 4→7 站、B 軌 5→8 站——每軌新增 git 存檔實作（故意做壞→回檔）、窄允許規則實作（含「不再問」效期依動作類型而異的查證後誠實提醒）、驗收實作（抽查＋追問「哪個你不確定」）；trust 章知識全數有了動手版。
 - 批次三 參考頁進階：settings-permissions／hooks／skills／subagents／mcp 各加「實戰進階」節（可抄範例＋邊界比較＋常見誤用），全部條目經 agent WebFetch 官方頁查證＋主對話複審（資安兩頁全讀）；其餘 9 頁列第二批視需要再排。
+- 批次三追加（2026-07-17 第二批）：9 頁中挑出 5 個機制類頁補「實戰進階」——slash-commands／built-in-tools／claude-md-memory／background-tasks-scheduling／claude-directory；what-is-claude-code／install／conversation-basics／faq 4 頁判定為 intro／概念類，維持現狀不硬加。深淺度評估判準與查證發現見 DECISIONS 2026-07-17 節。
 - 品質紀錄：草稿 agent 兩度以官方文件糾正我方 brief 的過時假設（MCP tool search 使未用連接器僅佔少量 context；「不再問」效期分動作類型），「brief 給方向、agent 查證後可推翻細節」的委派紀律有效。
 - 驗收：38 頁 build ✓、連結稽核零死鏈 ✓、簡繁/殘留掃描 ✓、PathStep 6/6 與側欄課程結構瀏覽器實測 ✓。**真人親友驗收（Phase 2 懸置項）現在起可安排——新舊內容一次驗。**
 

@@ -6,7 +6,7 @@ sources:
   - https://docs.claude.com/en/docs/claude-code/settings
   - https://docs.claude.com/en/docs/claude-code/memory
 audience: dev
-last_reviewed: 2026-07-13
+last_reviewed: 2026-07-17
 ---
 
 :::note[先備知識]
@@ -49,9 +49,67 @@ last_reviewed: 2026-07-13
 
 ### 兩層怎麼疊加
 
-同名設定衝突時，專案層優先於使用者層（例如 `.claude/settings.json` 的規則會蓋過 `~/.claude/settings.json`）。
-另外還有第三層「managed / 組織層」（如 macOS 的 `/Library/Application Support/ClaudeCode/`），由 IT／DevOps 集中管理、
-一般使用者無法覆蓋，多半只在公司統一發放電腦時才會遇到，這裡不展開。
+同名設定衝突時，範圍大的先讀、範圍小的後讀，越晚讀進來的優先度越高。實際完整順序是：
+
+**Managed（組織層）＞ 命令列參數 ＞ Local（`settings.local.json`）＞ Project（`settings.json`）＞ User（`~/.claude/settings.json`）**
+
+容易忽略的一點：本機的 `.claude/settings.local.json` 優先度比 commit 進 repo、team 共用的 `.claude/settings.json` **更高**——不是單純「專案層蓋過使用者層」這麼簡單，同一台機器上，你自己的 local 覆寫一樣會蓋過整個團隊共用的專案設定。
+Managed（如 macOS 的 `/Library/Application Support/ClaudeCode/`）由 IT／DevOps 集中管理、一般使用者無法覆蓋，多半只在公司統一發放電腦時才會遇到，這裡不展開。
+
+## 🛠️ 實戰進階
+
+### 範例一：一個實務上完整的專案 `.claude/` 目錄＋`.gitignore`
+
+把 `.claude/` 目錄當成「這個專案的協作契約」來設計時，實務上長這樣：
+
+```text
+my-project/
+├── .claude/
+│   ├── CLAUDE.md              # 團隊共用指令（進版控）
+│   ├── settings.json           # 團隊共用權限、hooks（進版控）
+│   ├── settings.local.json     # 你個人的覆寫（不進版控）
+│   ├── rules/
+│   │   ├── code-style.md       # 進版控
+│   │   └── testing.md          # 進版控
+│   ├── skills/
+│   │   └── deploy/SKILL.md     # 進版控
+│   └── agents/
+│       └── reviewer.md         # 進版控
+├── CLAUDE.local.md              # 你個人的專案筆記（不進版控）
+└── .gitignore
+```
+
+```text title=".gitignore"
+.claude/settings.local.json
+CLAUDE.local.md
+```
+
+**注意這條 `.gitignore` 不是自動幫你寫好的**：Claude Code 自己建立 `.claude/settings.local.json` 時，會順手幫你在 git 設定裡加忽略；但如果是你自己手動建立這個檔案（或是 `CLAUDE.local.md`），就不會自動排除，得自己加進 `.gitignore`，否則個人設定或私人筆記會被一起 commit 進團隊 repo。
+
+新成員加入專案時，建議照這個順序讀：先看 `.claude/CLAUDE.md`（團隊指令）、再看 `.claude/settings.json`（權限規則跟 hooks，了解哪些操作被自動允許或擋下）、有 `.claude/rules/` 的話挑跟自己要改的檔案類型相關的看。`.claude/settings.local.json` 跟 `CLAUDE.local.md` 是別人的個人設定，不需要看、也不該去改。
+
+### 範例二：用 `/status`、`/context`、`/doctor` 確認某條設定實際從哪一層生效
+
+多層設定疊加最常見的困惑是「明明 `.claude/settings.json` 裡設了 deny 規則，怎麼在我這裡好像沒生效」。排查順序：
+
+1. **`/status`**：列出這次 session 實際載入的設定來源（`Setting sources`），每個來源必須「至少含一項設定且成功解析」才會出現在清單裡——如果某個 settings 檔案 JSON 語法寫錯，它會直接消失在清單外，而不是報錯給你看。
+2. **`/doctor`**：檢查所有設定檔的 JSON 是否合法，抓出寫錯的地方。
+3. 確認完檔案有載入、JSON 也沒錯之後，若行為還是跟預期不同，檢查 **`.claude/settings.local.json` 裡有沒有衝突的規則**——多層優先順序是 Managed ＞ 命令列參數 ＞ **Local（`settings.local.json`）＞ Project（`settings.json`）＞ User（`~/.claude/settings.json`）**，local 的優先度比 project 高，一條允許規則寫在你自己的 `settings.local.json` 裡，會直接蓋過團隊寫在 `settings.json` 裡的擋下規則。
+
+CLAUDE.md 沒被遵守時排查方式類似，但指令不同：跑 **`/context`** 確認這次 session 實際載入了哪些 CLAUDE.md／`CLAUDE.local.md`（載入清單裡沒看到，代表 Claude 根本沒讀到這份指令，不是「讀到但沒照做」），跑 **`/memory`** 直接開啟並編輯這些檔案。
+
+### 跟相鄰機制的邊界
+
+- **這一頁**：`.claude/` 目錄結構本身——哪個檔案該放在哪、進不進版控、多層（managed／local／project／user）疊加時誰蓋過誰，是團隊協作時「誰的設定會生效」的總覽入口。
+- **[settings 與權限模式](../settings-permissions/)**：`settings.json` 內部欄位怎麼寫、權限規則（allow／deny／ask）的語法細節——這頁只講檔案放哪裡，欄位內容看那頁。
+- **[CLAUDE.md 與記憶](../claude-md-memory/)**：`CLAUDE.md` 該寫什麼內容、auto memory 怎麼運作——這頁只講 `CLAUDE.md` 放在哪一層、疊加順序，內容怎麼寫看那頁。
+- **[slash commands 總覽](../slash-commands/)**：`.claude/commands/`、`.claude/skills/` 實際會變成什麼指令。
+- **[hooks](../hooks/)**：`.claude/settings.json` 裡的 hooks 欄位具體怎麼寫。
+
+### 常見誤用
+
+- **以為寫進 `.claude/settings.json` 就一定對所有人生效**：容易忽略 `.claude/settings.local.json` 的優先度比專案層 `settings.json` 高——本機的 local 覆寫會蓋過 commit 進 repo 的團隊設定，出現「同事說這條規則生效了，我這邊卻沒有」的落差時，先檢查自己有沒有 local 覆寫，而不是懷疑團隊設定本身寫錯。
+- **手動建立 `settings.local.json` 或 `CLAUDE.local.md` 卻忘了排除進版控**：只有 Claude Code 自己建立這個檔案時才會自動幫你設定 git 忽略；自己手動建立的話不會自動排除，一沒注意就把個人偏好或私人筆記 commit 進團隊共用的 repo。
 
 ## 限制與注意
 
